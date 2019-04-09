@@ -25,7 +25,7 @@ class Course():
 
 
 class Department():
-    
+
     def __init__(self, campus, code, name, initials):
 
         self.campus = campus
@@ -80,7 +80,8 @@ class Campus():
                     # Creating the dictionarie with the
                     # first element in table head list
                     # and data table text
-                    course_attributes[table_head_list[0]] = str(table_data.text)
+                    course_attributes[table_head_list[0]] = str(
+                        table_data.text)
                     # Take off the first element in list and adding
                     # in final from the same list (queue)
                     table_head_list.append(table_head_list.pop(0))
@@ -89,10 +90,13 @@ class Campus():
                 # if not append in list of course
                 if course_attributes != {}:
                     self.courses.append(
-                        Course(campus_code, course_attributes['Código'], 
-                        course_attributes['Denominação'], course_attributes['Turno'], 
-                        course_attributes['Modalidade'])
-                        )
+                        Course(
+                            campus_code,
+                            course_attributes['Código'],
+                            course_attributes['Denominação'],
+                            course_attributes['Turno'],
+                            course_attributes['Modalidade'])
+                    )
                     list_courses.append(course_attributes)
         return list_courses
 
@@ -126,7 +130,8 @@ class Campus():
                     # Creating the dictionary with the
                     # first element in table head list
                     # and data table text
-                    department_attributes[table_head_list[0]] = str(table_data.text)
+                    department_attributes[table_head_list[0]] = str(
+                        table_data.text)
                     # Take off the first element in list and adding
                     # in final from the same list (queue)
                     table_head_list.append(table_head_list.pop(0))
@@ -135,9 +140,13 @@ class Campus():
                 # if not append in list of department
                 if department_attributes != {}:
                     self.departments.append(
-                        Department(campus_code, department_attributes['Código'], 
-                        department_attributes['Denominação'], department_attributes['Sigla'])
+                        Department(
+                            campus_code,
+                            department_attributes['Código'],
+                            department_attributes['Denominação'],
+                            department_attributes['Sigla']
                         )
+                    )
                     list_departments.append(department_attributes)
         return list_departments
 
