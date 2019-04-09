@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from requests import get
 import json
+from collection import dequeue
 
 BASE_URL = 'https://matriculaweb.unb.br/'
 CAMPUS = {
@@ -9,6 +10,47 @@ CAMPUS = {
     'Ceilandia': 3,
     'Gama': 4
 }
+
+
+class TableReader():
+
+    def readTableFromHTML(raw_html):
+
+        # Table head comment guide in table
+        table_head_list = dequeue()
+        extracted_data = []
+
+        # Select all the th in html parser
+        for table_head in raw_html.select('th'):
+            table_head_list.append(str(table_head.text))
+
+        # Select all the rows in html
+        for table_row in raw_html.select('tr'):
+            attributes = {}
+
+            # In all rows we take the data
+            for table_data in table_row.select('td'):
+
+                if str(table_data.text) == '':
+                    break
+
+                # Creating the dictionarie with the
+                # first element in table head list
+                # and data table text
+                attributes[table_head_list[0]] = str(
+                    table_data.text
+                )
+
+                # Take off the first element in list and adding
+                # in final from the same list (queue)
+                table_head_list.append(table_head_list.pop())
+
+            # Verify if the current course attribute is empty,
+            # if not append in list of course
+            if attributes != {}:
+                extracted_data.append(attributes)
+
+        return extracted_data
 
 
 class Course():
@@ -21,7 +63,7 @@ class Course():
         self.shift = shift
         self.modality = modality
 
-        self.discipline = []
+        self.disciplines = []
 
 
 class Department():
@@ -33,16 +75,20 @@ class Department():
         self.name = name
         self.initials = initials
 
-        self.disciplines_offers = []
+        self.disciplines = []
+
+    def getDisciplines():
+        pass
 
 
-class Campus():
+class Campus(TableReader):
 
     def __init__(self):
         self.all_campus_courses = {}
-        self.courses = []
+        self.courses = {}
+
         self.all_campus_departments = {}
-        self.departments = []
+        self.departments = {}
 
     def getCampusCoursesUrl(self, campus):
         return BASE_URL + 'graduacao/curso_rel.aspx?cod={}'.format(campus)
@@ -53,52 +99,25 @@ class Campus():
     def getCampusCourses(self, campus_code):
 
         response = get(self.getCampusCoursesUrl(campus_code))
-        list_courses = []
 
         if response.status_code == 200:
 
             # Make the parse for html
             raw_html = BeautifulSoup(response.content, 'html.parser')
+            table_data = self.readTableFromHTML(raw_html)
 
-            # Table head comment guide in table
-            table_head_list = []
+            for data in table_data:
+                c = Course(
+                    campus=campus_code,
+                    code=data['Código'],
+                    name=data['Denominação'],
+                    shift=data['Turno'],
+                    modality=data['Modalidade']
+                )
 
-            # Select all the th in html parser
-            for table_head in raw_html.select('th'):
-                table_head_list.append(str(table_head.text))
+                self.courses.update({c.code: c})
 
-            # Select all the rows in html
-            for table_row in raw_html.select('tr'):
-                course_attributes = {}
-
-                # In all rows we take the data
-                for table_data in table_row.select('td'):
-
-                    if str(table_data.text) == '':
-                        break
-
-                    # Creating the dictionarie with the
-                    # first element in table head list
-                    # and data table text
-                    course_attributes[table_head_list[0]] = str(
-                        table_data.text)
-                    # Take off the first element in list and adding
-                    # in final from the same list (queue)
-                    table_head_list.append(table_head_list.pop(0))
-
-                # Verify if the current course attribute is empty,
-                # if not append in list of course
-                if course_attributes != {}:
-                    self.courses.append(
-                        Course(
-                            campus_code,
-                            course_attributes['Código'],
-                            course_attributes['Denominação'],
-                            course_attributes['Turno'],
-                            course_attributes['Modalidade'])
-                    )
-                    list_courses.append(course_attributes)
-        return list_courses
+        return self.courses
 
     def getCampusDepartments(self, campus_code):
 
@@ -109,46 +128,19 @@ class Campus():
 
             # Make the parse for html
             raw_html = BeautifulSoup(response.content, 'html.parser')
+            table_data = self.readTableFromHTML(raw_html)
 
-            # Table head comment guide in table
-            table_head_list = []
+            for data in table_data:
 
-            # Select all the th in html parser
-            for table_head in raw_html.select('th'):
-                table_head_list.append(str(table_head.text))
+                d = Department(
+                    campus=campus_code,
+                    code=data['Código'],
+                    name=data['Denominação'],
+                    initial=data['Sigla']
+                )
+                self.departments.update({d.code: d})
 
-            # Select all the rows in html
-            for table_row in raw_html.select('tr'):
-                department_attributes = {}
-
-                # In all rows we take the data
-                for table_data in table_row.select('td'):
-
-                    if str(table_data.text) == '':
-                        break
-
-                    # Creating the dictionary with the
-                    # first element in table head list
-                    # and data table text
-                    department_attributes[table_head_list[0]] = str(
-                        table_data.text)
-                    # Take off the first element in list and adding
-                    # in final from the same list (queue)
-                    table_head_list.append(table_head_list.pop(0))
-
-                # Verify if the current department attribute is empty,
-                # if not append in list of department
-                if department_attributes != {}:
-                    self.departments.append(
-                        Department(
-                            campus_code,
-                            department_attributes['Código'],
-                            department_attributes['Denominação'],
-                            department_attributes['Sigla']
-                        )
-                    )
-                    list_departments.append(department_attributes)
-        return list_departments
+        return self.departments
 
     def getAllCampusCourses(self):
 
