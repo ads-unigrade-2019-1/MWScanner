@@ -190,9 +190,21 @@ class Class():
         self.vacancies = vacancies
         self.discipline = discipline
 
-        self.rooms = []
-        self.days = []
-        self.hours = []
+        # a meeting should be:
+        # {
+        #   room: str
+        #   day: str
+        #   hour: str
+        # }
+        self.meetings = []
+
+    def appendMeeting(self, room, day, hour):
+
+        self.meetings.append({
+            'room': room,
+            'day': day,
+            'hour': hour
+        })
 
 
 if __name__ == '__main__':
