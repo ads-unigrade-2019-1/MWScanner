@@ -4,33 +4,40 @@ import json
 
 BASE_URL = 'https://matriculaweb.unb.br/'
 CAMPUS = {
-    'darcy': 1,
-    'planaltina': 2,
-    'ceilandia': 3,
-    'gama': 4
+    'Darcy Ribeiro': 1,
+    'Planaltina': 2,
+    'Ceilandia': 3,
+    'Gama': 4
 }
 
 
-class Course:
+class Course():
 
-    def __init__(self, code, name, campus):
+    def __init__(self, campus, code, name, shift, modality):
 
+        self.campus = campus
         self.code = code
         self.name = name
-        self.campus = campus
+        self.shift = shift
+        self.modality = modality
+
         self.disciplines = []
 
-        return self
 
+class Campus():
 
-class CampusOperator:
+    def __init__(self):
+        self.all_campus_courses = {}
+        self.courses = []
+        self.all_campus_departments = {}
+        self.departments = []
 
-    def getCampusUrl(campus):
-        return BASE_URL + 'graduacao/curso_rel.aspx?cod={}'.format(campus[1])
+    def getCampusCoursesUrl(self, campus):
+        return BASE_URL + 'graduacao/curso_rel.aspx?cod={}'.format(campus)
 
-    def getCampusCourses(campus_url):
+    def getCampusCourses(self, campus_code):
 
-        response = get(campus_url)
+        response = get(self.getCampusCoursesUrl(campus_code))
         list_courses = []
 
         if response.status_code == 200:
@@ -59,7 +66,7 @@ class CampusOperator:
                     # first element in table head list
                     # and data table text
                     course_atributes[tableHeadList[0]] = str(table_data.text)
-
+                    #print(tableHeadList[0])
                     # Take off the first element in list and adding
                     # in final from the same list (queue)
                     tableHeadList.append(tableHeadList.pop(0))
@@ -67,24 +74,24 @@ class CampusOperator:
                 # Verify if the current course atribute is empty,
                 # if not append in list of course
                 if course_atributes != {}:
+                    self.courses.append(
+                        Course(campus_code, course_atributes['Código'], 
+                        course_atributes['Denominação'], course_atributes['Turno'], 
+                        course_atributes['Modalidade'])
+                        )
                     list_courses.append(course_atributes)
+        return list_courses
 
-        print(list_courses)
+    def getAllCampusCourses(self):
 
-    def getAllCourses():
-
-        courses = {}
-
-        for campus in CAMPUS.items():
-
-            courses.update({
-                campus: getCampusCourses(getCampusUrl(campus))
+        for campus, code in CAMPUS.items():
+            self.all_campus_courses.update({
+                campus: self.getCampusCourses(code)
             })
+        return self.all_campus_courses
 
-        return courses
 
-
-class Discipline:
+class Discipline():
 
     def __init__(self, code, name, departament, disciplineCredits, category):
 
@@ -98,10 +105,8 @@ class Discipline:
         self.requirements = []
         self.course = []
 
-        return self
 
-
-class Class:
+class Class():
 
     def __init__(self, name, vacancies, discipline):
 
@@ -113,8 +118,11 @@ class Class:
         self.days = []
         self.hours = []
 
-        return self
 
-
-class Departament:
+class Departament():
     pass
+
+if __name__ == '__main__':
+    campus = Campus()
+    list_all_campus_courses = campus.getAllCampusCourses()
+    print(list_all_campus_courses)
