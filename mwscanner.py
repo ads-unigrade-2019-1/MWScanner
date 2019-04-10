@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from requests import get
 import json
+import re
 
 BASE_URL = 'https://matriculaweb.unb.br/'
 
@@ -126,7 +127,25 @@ class TableReader:
         return extracted_data
 
 
-class Course():
+class Habilitation():
+    def __init__(self, code, name, degree):
+        self.code = code
+        self.name = name
+        self.degree = degree
+
+        # This represents the disciplines associated with this
+        # course. The data here wiil be on the following format:
+        # disciplines = [
+        #   'PERIOD_NUMBER': [list with the code for the
+        #                     discipline of this period]
+        #   ...
+        # ]
+        self.disciplines = []
+
+        # GET DISCIPLINES
+
+
+class Course(TableReader):
     # This class represents a course registered on the Matricula
     # Web. It has the information about this course.
 
@@ -147,14 +166,74 @@ class Course():
         # Type of degree this course provides
         self.modality = modality
 
-        # This represents the disciplines associated with this
-        # course. The data here wiil be on the following format:
-        # disciplines == [
-        #   'PERIOD_NUMBER': [list with the code for the
-        #                     discipline of this period]
-        #   ...
-        # ]
-        self.disciplines = []
+        self.habilitations = []
+
+        self.getHabilitations(self.code)
+
+    def getHabilitations(self, code):
+        response = get(
+            BASE_URL + 'graduacao/curso_dados.aspx?cod={}'.format(self.code))
+
+        if response.status_code == 200:
+            raw_html = BeautifulSoup(response.content, 'html.parser')
+            # lists to take each habilitation data
+            codes = []
+            names = []
+            degrees = []
+            # take codes and names from page
+            for h4 in raw_html.select('h4'):
+                habilitation_code = (int(
+                        (re.search(r"\d+", h4.text)).group()))
+                habilitation_name = (
+                    re.search(r"\D+", h4.text)
+                ).group().rstrip()
+                codes.append(habilitation_code)
+                names.append(habilitation_name)
+            # take degrees from page
+            for tr in raw_html.select('tr'):
+                if tr.th.text == 'Grau':
+                    habilitation_degree = tr.td.text
+                    degrees.append(habilitation_degree)
+            # append habilitations data in list
+            for i in range(len(codes)):
+                self.habilitations.append(
+                    Habilitation(
+                        codes[i], names[i], degrees[i]
+                    )
+                )
+                print(codes[i], names[i], degrees[i])
+
+    def getDisciplineListURL(self):
+        return BASE_URL + 'graduacao/fluxo.aspx?cod={}'.format(self.code)
+
+    def buildLinkList(self):
+        # This method builds the list of disciplines that belongs
+        # to this departament. This list will be later used to
+        # process the creation of the Discipline object.
+
+        response = get(self.getDisciplineListURL())
+
+        if response.status_code == 200:
+
+            # Make the parse for html
+            raw_html = BeautifulSoup(response.content, 'html.parser')
+            table_data = self.readDatatableTableFromHTML(raw_html)
+
+            # in table there are 3 types of data:
+            # 'Código': the code of a discipline that belongs to the
+            #           current departament
+            # 'Denominação': name of the discipline
+            # 'Ementa': garbage (it was a icon with a link on
+            #           the table, but those information where
+            #           ignored when scrapping)
+
+            # the table_data can be empty
+            # if table_data is not None:
+            #     self.disciplines.append([
+            #         {'Código': x['Código'], 'Denominação': x['Denominação']}
+            #         for x in table_data
+            #     ])
+            #     print(self.disciplines)
 
 
 class Department(TableReader):
@@ -396,9 +475,10 @@ if __name__ == '__main__':
     list_all_campus_courses = campus.getAllCampusCourses()
     list_all_campus_departments = campus.getAllCampusDepartments()
 
-    # pprint all courses found
+    # print all courses found
     for course in campus.courses:
         print("[CURSO] CÓDIGO: {} - NOME: {}".format(course.code, course.name))
+        course.buildLinkList()
 
     # prints departament information
     # and then build the list of disciplines that each departament have
