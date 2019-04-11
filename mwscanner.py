@@ -1,7 +1,9 @@
 from bs4 import BeautifulSoup
 from requests import get
+import requests
 import json
 import re
+import sys
 
 BASE_URL = 'https://matriculaweb.unb.br/'
 
@@ -152,7 +154,16 @@ class Habilitation():
         # to this departament. This list will be later used to
         # process the creation of the Discipline object.
 
-        response = get(self.getDisciplineListURL())
+        try:
+            response = get(self.getDisciplineListURL())
+        except requests.exceptions.Timeout:
+            print("Request take timeout try late: ")
+        except requests.exceptions.TooManyRedirects:
+            print("Url maybe is not correct try diferent one: ")
+        except requests.exceptions.RequestException as e:
+            print("It was not possible to make the request: " + e)
+            sys.exit(1)
+
         if response.status_code == 200:
 
             raw_html = BeautifulSoup(response.content, 'html.parser')
@@ -212,8 +223,17 @@ class Course(TableReader):
         self.getHabilitations(self.code)
 
     def getHabilitations(self, code):
-        response = get(
-            BASE_URL + 'graduacao/curso_dados.aspx?cod={}'.format(self.code))
+        
+        try: 
+            response = get( BASE_URL + 
+                'graduacao/curso_dados.aspx?cod={}'.format(self.code))
+        except requests.exceptions.Timeout:
+            print("Request take timeout try late: ")
+        except requests.exceptions.TooManyRedirects:
+            print("Url maybe is not correct try diferent one: ")
+        except requests.exceptions.RequestException as e:
+            print("It was not possible to make the request: " + e)
+            sys.exit(1)
 
         if response.status_code == 200:
             raw_html = BeautifulSoup(response.content, 'html.parser')
@@ -223,13 +243,17 @@ class Course(TableReader):
             degrees = []
             # take codes and names from page
             for h4 in raw_html.select('h4'):
+                # Separate the h4 in two parts
+                # code and name using regex
                 habilitation_code = (int(
                         (re.search(r"\d+", h4.text)).group()))
                 habilitation_name = (
                     re.search(r"\D+", h4.text)
                 ).group().rstrip()
+
                 codes.append(habilitation_code)
                 names.append(habilitation_name)
+
             # take degrees from page
             for tr in raw_html.select('tr'):
                 if tr.th.text == 'Grau':
@@ -265,7 +289,15 @@ class Department(TableReader):
         # to this departament. This list will be later used to
         # process the creation of the Discipline object.
 
-        response = get(self.getDisciplineListURL())
+        try:
+            response = get(self.getDisciplineListURL())
+        except requests.exceptions.Timeout:
+            print("Request take timeout try late: ")
+        except requests.exceptions.TooManyRedirects:
+            print("Url maybe is not correct try diferent one: ")
+        except requests.exceptions.RequestException as e:
+            print("It was not possible to make the request: " + e)
+            sys.exit(1)
 
         if response.status_code == 200:
 
@@ -315,7 +347,18 @@ class Campus(TableReader):
 
         # Make the response according the campus URL and
         # initiate the list of courses
-        response = get(self.getCampusCoursesUrl(campus_code))
+        
+        try:
+            response = get(self.getCampusCoursesUrl(campus_code))
+        except requests.exceptions.Timeout:
+            print("Request take timeout try late: ")
+        except requests.exceptions.TooManyRedirects:
+            print("Url maybe is not correct try diferent one: ")
+        except requests.exceptions.RequestException as e:
+            print("It was not possible to make the request: " + e)
+            sys.exit(1)
+
+
         list_courses = []
 
         # if the status code is "ok"
@@ -358,7 +401,17 @@ class Campus(TableReader):
     def getCampusDepartments(self, campus_code):
 
         # Make response and initialize the list of departaments
-        response = get(self.getCampusDepartmentsUrl(campus_code))
+
+        try:
+            response = get(self.getCampusDepartmentsUrl(campus_code))
+        except requests.exceptions.Timeout:
+            print("Request take timeout try late: ")
+        except requests.exceptions.TooManyRedirects:
+            print("Url maybe is not correct try diferent one: ")
+        except requests.exceptions.RequestException as e:
+            print("It was not possible to make the request: " + e)
+            sys.exit(1)
+            
         list_departments = []
 
         # Verify if the status cod is ok
