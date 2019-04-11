@@ -142,7 +142,48 @@ class Habilitation():
         # ]
         self.disciplines = []
 
-        # GET DISCIPLINES
+    def getDisciplineListURL(self):
+        # This method take the url of the
+        # disciplines from habilitation flow
+        return BASE_URL + 'graduacao/fluxo.aspx?cod={}'.format(self.code)
+
+    def buildLinkList(self):
+        # This method builds the list of disciplines that belongs
+        # to this departament. This list will be later used to
+        # process the creation of the Discipline object.
+
+        response = get(self.getDisciplineListURL())
+        if response.status_code == 200:
+
+            raw_html = BeautifulSoup(response.content, 'html.parser')
+            # scrolls through tables with datatable id
+            periods_tables = raw_html.find_all(id="datatable")
+            for period_table in periods_tables:
+                # picks up the period information that is in the tablehead
+                period_infos = period_table.find_all('th')
+                period = (period_infos[0].text + " " + period_infos[1].text)
+
+                # print(period)
+
+                # take the information of the disciplines
+                # of the period that are in the td
+                disciplines_infos = period_table.find_all('td')
+
+                period_disciplines = []
+                for i in range(0, len(disciplines_infos), 6):
+                    discipline_code = int(disciplines_infos[3 + i].text)
+                    discipline_name = (disciplines_infos[4 + i].text).rstrip()
+                    # print(discipline_code)
+                    # print(discipline_name)
+
+                    period_disciplines.append(
+                        {'Código': discipline_code,
+                            'Nome': discipline_name}
+                    )
+                self.disciplines.append(
+                    {'Período': period, 'Disciplinas': period_disciplines}
+                )
+            # print(self.disciplines)
 
 
 class Course(TableReader):
@@ -165,9 +206,9 @@ class Course(TableReader):
 
         # Type of degree this course provides
         self.modality = modality
-
+        # Course habilitations
         self.habilitations = []
-
+        # Method to initialize habilitations with course habilitations
         self.getHabilitations(self.code)
 
     def getHabilitations(self, code):
@@ -201,54 +242,22 @@ class Course(TableReader):
                         codes[i], names[i], degrees[i]
                     )
                 )
-                print(codes[i], names[i], degrees[i])
-
-    def getDisciplineListURL(self):
-        return BASE_URL + 'graduacao/fluxo.aspx?cod={}'.format(self.code)
-
-    def buildLinkList(self):
-        # This method builds the list of disciplines that belongs
-        # to this departament. This list will be later used to
-        # process the creation of the Discipline object.
-
-        response = get(self.getDisciplineListURL())
-
-        if response.status_code == 200:
-
-            # Make the parse for html
-            raw_html = BeautifulSoup(response.content, 'html.parser')
-            table_data = self.readDatatableTableFromHTML(raw_html)
-
-            # in table there are 3 types of data:
-            # 'Código': the code of a discipline that belongs to the
-            #           current departament
-            # 'Denominação': name of the discipline
-            # 'Ementa': garbage (it was a icon with a link on
-            #           the table, but those information where
-            #           ignored when scrapping)
-
-            # the table_data can be empty
-            # if table_data is not None:
-            #     self.disciplines.append([
-            #         {'Código': x['Código'], 'Denominação': x['Denominação']}
-            #         for x in table_data
-            #     ])
-            #     print(self.disciplines)
 
 
 class Department(TableReader):
 
     def __init__(self, campus, code, name, initials):
-
+        # department attributes
         self.campus = campus
         self.code = code
         self.name = name
         self.initials = initials
 
         self.disciplines = []
-        self.unprocessedDisciplines = []
 
     def getDisciplineListURL(self):
+        # This method take the url of the
+        # disciplines from the department code
         return BASE_URL + 'graduacao/oferta_dis.aspx?cod={}'.format(self.code)
 
     def buildLinkList(self):
@@ -274,17 +283,16 @@ class Department(TableReader):
 
             # the table_data can be empty
             if table_data is not None:
-                self.unprocessedDisciplines += [
+                self.disciplines += [
                     {'Código': x['Código'], 'Denominação': x['Denominação']}
                     for x in table_data
                 ]
-                print(self.unprocessedDisciplines)
 
 
 class Campus(TableReader):
     # This class represent all the 4 campus prensent in UnB
 
-    # Define the atributes basics from all campus
+    # Define the attributes basics from all campus
     def __init__(self):
         self.all_campus_courses = {}
         self.courses = []
@@ -465,24 +473,40 @@ class Class():
 
 
 if __name__ == '__main__':
+    try:
+        # creates a campus object, it will hold
+        # information about the campi on the Matricula Web
+        campus = Campus()
 
-    # creates a campus object, it will hold
-    # information about the campi on the Matricula Web
-    campus = Campus()
+        # call methodes to scrap courses and departaments information
+        # frow the Web
+        list_all_campus_courses = campus.getAllCampusCourses()
+        list_all_campus_departments = campus.getAllCampusDepartments()
 
-    # call methodes to scrap courses and departaments information
-    # frow the Web
-    list_all_campus_courses = campus.getAllCampusCourses()
-    list_all_campus_departments = campus.getAllCampusDepartments()
+        # print all courses and habilitations founded
+        for course in campus.courses:
+            print(
+                "[CURSO] CÓDIGO: {} NOME: {} TURNO: {} MODALIDADE: {}".format(
+                    course.code, course.name, course.shift, course.modality)
+            )
+            for habilitation in course.habilitations:
+                print("[HABILITAÇÃO] CÓDIGO: {} NOME: {} GRAU: {}".format(
+                    habilitation.code, habilitation.name, habilitation.degree))
+                habilitation.buildLinkList()
+                print("[LISTA DE DISCIPLINAS POR PERÍODO] {}".format(
+                    habilitation.disciplines
+                    )
+                )
 
-    # print all courses found
-    for course in campus.courses:
-        print("[CURSO] CÓDIGO: {} - NOME: {}".format(course.code, course.name))
-        course.buildLinkList()
-
-    # prints departament information
-    # and then build the list of disciplines that each departament have
-    for departament in campus.departments:
-        print("[DEPARTAMENTO] CÓDIGO: {} - NOME: {}".format(
-                departament.code, departament.name))
-        departament.buildLinkList()
+        # prints departament information
+        # and then build the list of disciplines that each departament have
+        for departament in campus.departments:
+            print("[DEPARTAMENTO] CÓDIGO: {} NOME: {} SIGLA: {}".format(
+                    departament.code, departament.name, departament.initials))
+            departament.buildLinkList()
+            print("[LISTA DE DISCIPLINAS POR DEPARTAMENTO] {}".format(
+                    departament.disciplines
+                )
+            )
+    except KeyboardInterrupt:
+        print('Interruption')
