@@ -16,7 +16,7 @@ CAMPUS = {
 }
 
 
-class TableReader:
+class TableReaderMixin:
     # Abstract class that provides methods for the
     # reading of tables on pages of Matricula Web
     # website. This is inherithed in a scheme that allow
@@ -195,9 +195,10 @@ class Habilitation():
                     {'Período': period, 'Disciplinas': period_disciplines}
                 )
             # print(self.disciplines)
+            ##################################
 
 
-class Course(TableReader):
+class Course(TableReaderMixin):
     # This class represents a course registered on the Matricula
     # Web. It has the information about this course.
 
@@ -272,7 +273,7 @@ class Course(TableReader):
                 )
 
 
-class Department(TableReader):
+class Department(TableReaderMixin):
 
     def __init__(self, campus, code, name, initials):
         # department attributes
@@ -459,7 +460,7 @@ class Campus(TableReaderMixin):
         return self.all_campus_departments
 
 
-class Discipline():
+class Discipline(TableReaderMixin):
     # This class represents a Discipline present on
     # matriculaweb. it contains data about the discipline
     # and holds its classes and requirements
