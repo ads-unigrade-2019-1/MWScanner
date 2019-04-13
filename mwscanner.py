@@ -157,7 +157,7 @@ class Habilitation():
         try:
             response = get(self.getDisciplineListURL())
         except requests.exceptions.Timeout:
-            print("Request take timeout try late: ")
+            print("Request take timeout try later: ")
         except requests.exceptions.TooManyRedirects:
             print("Url maybe is not correct try diferent one: ")
         except requests.exceptions.RequestException as e:
@@ -217,18 +217,22 @@ class Course(TableReader):
 
         # Type of degree this course provides
         self.modality = modality
-        # Course habilitations
+        # Course habilitations, a course curriculum can change
+        # based on its habilitations
         self.habilitations = []
+
         # Method to initialize habilitations with course habilitations
         self.getHabilitations(self.code)
 
     def getHabilitations(self, code):
-        
-        try: 
-            response = get( BASE_URL + 
-                'graduacao/curso_dados.aspx?cod={}'.format(self.code))
+
+        try:
+            response = get(
+                BASE_URL + 'graduacao/curso_dados.aspx?cod={}'.format(
+                    self.code)
+            )
         except requests.exceptions.Timeout:
-            print("Request take timeout try late: ")
+            print("Request take timeout try later: ")
         except requests.exceptions.TooManyRedirects:
             print("Url maybe is not correct try diferent one: ")
         except requests.exceptions.RequestException as e:
@@ -246,7 +250,7 @@ class Course(TableReader):
                 # Separate the h4 in two parts
                 # code and name using regex
                 habilitation_code = (int(
-                        (re.search(r"\d+", h4.text)).group()))
+                    (re.search(r"\d+", h4.text)).group()))
                 habilitation_name = (
                     re.search(r"\D+", h4.text)
                 ).group().rstrip()
@@ -278,6 +282,7 @@ class Department(TableReader):
         self.initials = initials
 
         self.disciplines = []
+        self.unprocessedDisciplines = []
 
     def getDisciplineListURL(self):
         # This method take the url of the
@@ -292,7 +297,7 @@ class Department(TableReader):
         try:
             response = get(self.getDisciplineListURL())
         except requests.exceptions.Timeout:
-            print("Request take timeout try late: ")
+            print("Request take timeout try later: ")
         except requests.exceptions.TooManyRedirects:
             print("Url maybe is not correct try diferent one: ")
         except requests.exceptions.RequestException as e:
@@ -314,14 +319,20 @@ class Department(TableReader):
             #           ignored when scrapping)
 
             # the table_data can be empty
-            if table_data is not None:
-                self.disciplines += [
-                    {'Código': x['Código'], 'Denominação': x['Denominação']}
-                    for x in table_data
-                ]
+            if (self.campus == 1):
+                if table_data is not None:
+                    self.unprocessedDisciplines += [
+                        {'Código': x['Código'],
+                            'Denominação': x['Denominação']}
+                        for x in table_data
+                    ]
+                    self.disciplines.append([
+                        Discipline(x['Código'], x['Denominação'], self.code)
+                        for x in table_data
+                    ])
 
 
-class Campus(TableReader):
+class Campus(TableReaderMixin):
     # This class represent all the 4 campus prensent in UnB
 
     # Define the attributes basics from all campus
@@ -347,17 +358,16 @@ class Campus(TableReader):
 
         # Make the response according the campus URL and
         # initiate the list of courses
-        
+
         try:
             response = get(self.getCampusCoursesUrl(campus_code))
         except requests.exceptions.Timeout:
-            print("Request take timeout try late: ")
+            print("Request take timeout try later: ")
         except requests.exceptions.TooManyRedirects:
             print("Url maybe is not correct try diferent one: ")
         except requests.exceptions.RequestException as e:
             print("It was not possible to make the request: " + e)
             sys.exit(1)
-
 
         list_courses = []
 
@@ -405,13 +415,13 @@ class Campus(TableReader):
         try:
             response = get(self.getCampusDepartmentsUrl(campus_code))
         except requests.exceptions.Timeout:
-            print("Request take timeout try late: ")
+            print("Request take timeout try later: ")
         except requests.exceptions.TooManyRedirects:
             print("Url maybe is not correct try diferent one: ")
         except requests.exceptions.RequestException as e:
             print("It was not possible to make the request: " + e)
             sys.exit(1)
-            
+
         list_departments = []
 
         # Verify if the status cod is ok
@@ -454,7 +464,7 @@ class Discipline():
     # matriculaweb. it contains data about the discipline
     # and holds its classes and requirements
 
-    def __init__(self, code, name, departament, discipline_credits, category):
+    def __init__(self, code, name, departament):
 
         # name of the discipline
         self.name = name
@@ -468,9 +478,9 @@ class Discipline():
 
         # aumount of credits that this discipline
         # is worth
-        self.credits = discipline_credits
+        # self.credits = discipline_credits
 
-        self.category = category
+        # self.category = category
 
         # list with the Classes objects for this discipline
         self.classes = []
@@ -482,8 +492,111 @@ class Discipline():
         # for the required disciplines
         self.requirements = []
 
-        # courses that have this discipline on its curriculum
-        self.courses = []
+        self.getClassesData()
+
+    # METODO PARA CRIAR A URL
+    def getDisciplineURL(self):
+        # This method take the url of the
+        # disciplines from the department code
+        return BASE_URL + 'graduacao/oferta_dados.aspx?cod={}&dep={}'.format(
+            self.code, self.departament)
+
+    # METODO PARA PEGAR A URL E PEGAR OS DADOS E RETORNAR A DISCIPLINA
+    def getClassesData(self):
+        # Make response
+
+        try:
+            response = get(self.getDisciplineURL())
+        except requests.exceptions.Timeout:
+            print("Request take timeout try later: ")
+        except requests.exceptions.TooManyRedirects:
+            print("Url maybe is not correct try diferent one: ")
+        except requests.exceptions.RequestException as e:
+            print("It was not possible to make the request: " + e)
+            sys.exit(1)
+
+        found_classes = []
+
+        # Verify if the status cod is ok
+        if response.status_code == 200:
+            # Make the parse for html
+            # And read the table indentify in parse html
+            raw_html = BeautifulSoup(response.content, 'html.parser')
+            table_vacances = raw_html.find_all(
+                'table', {'class': 'table tabela-vagas'})
+            candidates_shift = raw_html.find_all('td', {'colspan': '2'})
+            shift_turn = []
+            filter_mettings = raw_html.find_all(
+                'table', {
+                    'class': 'table table-striped table-bordered table-condensed'
+                })
+
+            meeting = []
+            meetings = []
+
+            for curretn in filter_mettings:
+                meeting.append(curretn.text)
+
+            number_classes = len(raw_html.find_all('td', {'class': 'turma'}))
+            number_meetings = len(meeting)
+
+            cont = 0
+
+            if number_meetings > 0:
+
+                for i in range(0, len(meeting), int(number_meetings / number_classes)):
+                    meetings.append(
+                        meeting[i:i + int(number_meetings / number_classes)])
+
+                for cand in candidates_shift:
+                    if cand.text == 'Diurno' or cand.text == 'Ambos' or cand.text == 'Noturno':
+                        shift_turn.append(cand.text)
+
+                str_html = str(raw_html)
+                teachers = []
+
+                designate_teacher = []
+
+                if(str_html.find('<td>A Designar</table>')):
+                    for designate in re.finditer('A Designar</table>', str_html):
+                        designate_teacher.append(designate.start())
+
+                print(designate_teacher)
+
+                for pos_teacher in re.finditer('<td><table><tr><td>', str_html):
+                    current_teacher = []
+                    position_current = pos_teacher.end()
+
+                    if designate_teacher != []:
+                        for i in designate_teacher:
+                            if i < position_current:
+                                teachers.append(['A Designar'])
+                                del i
+
+                    first_teacher = str_html[position_current:].partition(
+                        "</td>")[0]
+                    next_verify = str_html[position_current:].partition(
+                        "</td>")[2]
+                    current_teacher.append(first_teacher)
+
+                    if(next_verify[0:13] == '</tr><tr><td>'):
+                        second_teacher = next_verify[13:]
+                        second_teacher = second_teacher.partition("</td>")[0]
+                        current_teacher.append(second_teacher)
+
+                    teachers.append(current_teacher)
+
+                if designate_teacher != []:
+                    teachers.append(['A designar'])
+
+                print(teachers)
+
+                cont = 0
+                for cla in raw_html.find_all('td', {'class': 'turma'}):
+                    found_classes.append(
+                        {'class': cla.text, 'vacancies': table_vacances[cont].text, 'shift': shift_turn[cont], 'meetting': meetings[cont], 'teacher': teachers[cont]})
+                    cont += 1
+                print(found_classes)
 
 
 class Class():
@@ -491,7 +604,7 @@ class Class():
     # Web. It contains data about the meetings and a
     # connection to the discipline.
 
-    def __init__(self, name, vacancies, discipline):
+    def __init__(self, name, vacancies, discipline, meetings, teachers):
 
         # name of class, example: "Turma A"
         # this is unique inside a discipline
@@ -509,20 +622,23 @@ class Class():
         #   day: str
         #   hour: str
         # }
-        self.meetings = []
+        self.meetings = meetings
 
-    def appendMeeting(self, room, day, hour):
-        # adds a meeting to this class list of meetings
-        # all parameters are strings
-        # room: room where the meeting will occour
-        # day: weekday of the meeting
-        # hour: time of the meeting
+        self.teachers = teachers
 
-        self.meetings.append({
-            'room': room,
-            'day': day,
-            'hour': hour
-        })
+    # def appendMeeting(self, room, day, init_hour, final_hour):
+    #     # adds a meeting to this class list of meetings
+    #     # all parameters are strings
+    #     # room: room where the meeting will occour
+    #     # day: weekday of the meeting
+    #     # hour: time of the meeting
+
+    #     self.meetings.append({
+    #         'day': day,
+    #         'init_hour': init_hour,
+    #         'final_hour': final_hour,
+    #         'room': room
+    #     })
 
 
 if __name__ == '__main__':
@@ -537,29 +653,29 @@ if __name__ == '__main__':
         list_all_campus_departments = campus.getAllCampusDepartments()
 
         # print all courses and habilitations founded
-        for course in campus.courses:
-            print(
-                "[CURSO] CÓDIGO: {} NOME: {} TURNO: {} MODALIDADE: {}".format(
-                    course.code, course.name, course.shift, course.modality)
-            )
-            for habilitation in course.habilitations:
-                print("[HABILITAÇÃO] CÓDIGO: {} NOME: {} GRAU: {}".format(
-                    habilitation.code, habilitation.name, habilitation.degree))
-                habilitation.buildLinkList()
-                print("[LISTA DE DISCIPLINAS POR PERÍODO] {}".format(
-                    habilitation.disciplines
-                    )
-                )
+        # for course in campus.courses:
+        # print(
+        #     "[CURSO] CÓDIGO: {} NOME: {} TURNO: {} MODALIDADE: {}".format(
+        #         course.code, course.name, course.shift, course.modality)
+        # )
+        # for habilitation in course.habilitations:
+        #     print("[HABILITAÇÃO] CÓDIGO: {} NOME: {} GRAU: {}".format(
+        #         habilitation.code, habilitation.name, habilitation.degree))
+        #     habilitation.buildLinkList()
+        #     print("[LISTA DE DISCIPLINAS POR PERÍODO] {}".format(
+        #         habilitation.disciplines
+        #     )
+        #     )
 
         # prints departament information
         # and then build the list of disciplines that each departament have
         for departament in campus.departments:
             print("[DEPARTAMENTO] CÓDIGO: {} NOME: {} SIGLA: {}".format(
-                    departament.code, departament.name, departament.initials))
+                departament.code, departament.name, departament.initials))
             departament.buildLinkList()
             print("[LISTA DE DISCIPLINAS POR DEPARTAMENTO] {}".format(
-                    departament.disciplines
-                )
+                departament.unprocessedDisciplines
+            )
             )
     except KeyboardInterrupt:
         print('Interruption')
