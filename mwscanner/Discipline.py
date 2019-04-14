@@ -43,16 +43,23 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         self.requirements = []
 
         self.getClassesData()
+        self.getRequirements()
 
-    def getDisciplineURL(self):
+    def getDisciplineOfferURL(self):
         # This method take the url of the
         # disciplines from the department code
         return BASE_URL + 'graduacao/oferta_dados.aspx?cod={}&dep={}'.format(
             self.code, self.departament)
 
+    def getDisciplineURL(self):
+        # This method take the url of the
+        # disciplines from the department code
+        return BASE_URL + 'graduacao/disciplina.aspx?cod={}'.format(
+            self.code)
+
     def getClassesData(self):
 
-        response = self.getFromUrl(self.getDisciplineURL())
+        response = self.getFromUrl(self.getDisciplineOfferURL())
 
         # Verify if the status cod is ok
         if response.status_code != 200:
@@ -85,3 +92,42 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
             print('[Discipline {}] Class {} finished'.format(self.name, c.name))
 
         print('[Discipline {}] finished'.format(self.name))
+
+    def getRequirements(self):
+
+        response = self.getFromUrl(self.getDisciplineURL())
+
+        if response.status_code != 200:
+            return
+
+        raw_html = BeautifulSoup(response.content, 'lxml')
+
+        requirements_table_row = raw_html.findAll(
+            'th', text='Pré-requisitos')[0].parent
+
+        found_requirements = []
+        append_next = False
+
+
+        for req in requirements_table_row.findAll('strong'):
+
+            req = req.text.strip()
+
+            if req == '' or req == 'E':
+                continue
+
+            if append_next:
+                found_requirements[-1].append(req)
+                append_next = False
+
+            elif req == 'OU':
+                if type(found_requirements[-1]) is not list:
+                    found_requirements[-1] = [found_requirements[-1]]
+                append_next = True
+
+            else:
+                found_requirements.append(
+                    req
+                )
+
+        self.requirements = found_requirements
