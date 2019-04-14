@@ -82,4 +82,6 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
             c = Class.buildFromHtml(class_table, self)
             found_classes.append(c)
 
-            print('code: {} name: {} vagas: {} meetings: {} teachers: {} shift: {}'.format(c.discipline.code, c.name, c.vacancies, c.meetings, c.teachers, c.shift))
+            print('[Discipline {}] Class {} finished'.format(self.name, c.name))
+
+        print('[Discipline {}] finished'.format(self.name))

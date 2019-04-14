@@ -118,6 +118,7 @@ class Campus(TableReaderMixin, UrlLoaderMixin):
                 )
             )
             list_departments.append(data)
+            print("[CAMPUS] Found departament {}".format(data['Denominação']))
 
         return list_departments
 

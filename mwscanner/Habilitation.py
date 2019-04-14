@@ -63,3 +63,5 @@ class Habilitation(UrlLoaderMixin):
             self.disciplines.update(
                 {period: period_disciplines}
             )
+
+        print("[Habilitation {}] Finished".format(self.name))
