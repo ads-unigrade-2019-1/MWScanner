@@ -12,7 +12,7 @@ class HabilitationDb(Database):
 
         for course in campus.courses:
             for habilitation in course.habilitations:
-                habilitation_dict = {}
+                current_habilitation = {}
                 disciplines_list = []
 
                 habilitation.buildLinkList()
@@ -25,14 +25,12 @@ class HabilitationDb(Database):
                     
                     disciplines_list.append({ key: discipline_by_peorid})
 
-                print(disciplines_list)
-
-                habilitation_dict.update({
+                current_habilitation.update({
                     'code': habilitation.code,
                     'name': habilitation.name + " (" + habilitation.degree + ")",
                     'disciplines': disciplines_list
                 })
 
-                collection_habilitation.insert_one(habilitation_dict)
+                collection_habilitation.insert_one(current_habilitation)
 
     
