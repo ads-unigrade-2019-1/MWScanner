@@ -118,7 +118,7 @@ class UrlLoaderMixin:
     # its porpouse is to define a custom behaviour on the get method
     # without duplicating code
 
-    def getFromUrl(self, url):
+    def getFromUrl(self, url, fails=0):
 
         response = None
 
@@ -136,7 +136,14 @@ class UrlLoaderMixin:
 
         finally:
             if response is None:
-                print("Failed to get response, exitting...")
-                sys.exit(1)
+
+                if fails >= 3:
+                    print("Failed to get response after retries, exiting...")
+                    sys.exit(1)
+
+                print("Failed to get response, trying again... ({})".format(fails+1))
+                return self.getFromUrl(url, fails+1)
+
+
 
         return response
