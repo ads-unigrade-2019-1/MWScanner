@@ -96,7 +96,7 @@ class Campus(TableReaderMixin, UrlLoaderMixin):
         response = self.getFromUrl(self.getCampusDepartmentsUrl(campus_code))
 
         # Verify if the status code is ok
-        if response.status_code == 200:
+        if response.status_code != 200:
             return None
 
         list_departments = []

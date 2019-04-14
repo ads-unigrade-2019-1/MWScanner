@@ -57,7 +57,7 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         response = self.getFromUrl(self.getDisciplineURL())
 
         # Verify if the status cod is ok
-        if response.status_code == 200:
+        if response.status_code != 200:
             return
 
         found_classes = []
