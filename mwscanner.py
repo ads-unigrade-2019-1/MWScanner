@@ -1,6 +1,6 @@
 from mwscanner.Campus import Campus
 from mwscanner.Discipline import Discipline
-from dbConnection import Database
+from databaseConfig.SaveData import SaveData
 
 
 BASE_URL = 'https://matriculaweb.unb.br/'
