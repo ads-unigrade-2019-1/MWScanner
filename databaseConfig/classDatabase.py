@@ -7,7 +7,7 @@ class ClassDb(Database):
     def saveClass(campus):
 
         db = Database.defineConnections()
-        collection_discipline = db['classes']
+        collection_classes = db['classes']
 
         for departament in campus.departments:
 
@@ -15,8 +15,17 @@ class ClassDb(Database):
 
             for discipline in departament.disciplines:
 
-                for classe in discipline.classes:
+                for d in discipline: 
 
-                    collection_discipline.insert_one(classe)
-                
+                    for classe in d.classes:
+
+                        collection_classes.insert_one({
+                            'name': classe.name,
+                            'vacancies': classe.vacancies,
+                            'discipline': classe.discipline.code,
+                            'meetings': classe.meetings,
+                            'shift': classe.shift,
+                            'teachers': classe.teachers
+                        })
+                    
     

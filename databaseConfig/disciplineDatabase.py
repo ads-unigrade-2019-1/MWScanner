@@ -1,6 +1,5 @@
 from databaseConfig.dbConnection import Database
 
-
 class DisciplineDb(Database):
 
     @staticmethod
@@ -13,27 +12,25 @@ class DisciplineDb(Database):
 
             departament.buildLinkList()
 
-            current_discipline = {}
-
             for discipline in departament.disciplines:
+                for d in discipline:
+                    
+                    classes_list = []
+                    
+                    for classes in d.classes:
+                        classes_list.append(classes.name)
 
-                classes_list = []
-                requeriments_list = []
+                    collection_discipline.insert_one({
+                        'name': d.name,
+                        'code': d.code,
+                        'departament': departament.code,
+                        'classes': classes_list,
+                        'requirements': d.requirements
+                    })
 
-                for classe in discipline.classes:
-                    classes_list.append(classe.name)
+                    
+                        
 
-                for requirement in discipline.requeriments:
-                    requeriments_list.append(requirement.code)
-
-                current_discipline.update({
-                    'name': discipline.name,
-                    'code': discipline.code,
-                    'departament': departament.code,
-                    'classe': classes_list,
-                    'requeriments': requeriments_list
-                })
-
-                collection_discipline.insert_one(current_discipline)
+               
                 
     
