@@ -49,15 +49,15 @@ class Department(TableReaderMixin, UrlLoaderMixin):
         #           ignored when scrapping)
 
         # the table_data can be empty
-        if (self.campus == 1):
-            if table_data is not None:
-                self.unprocessedDisciplines += [
-                    {'Código': x['Código'],
-                        'Denominação': x['Denominação']}
-                    for x in table_data
-                ]
-                self.disciplines.append([
-                    Discipline(x['Código'], x['Denominação'], self.code)
-                    for x in table_data
-                ])
+
+        if table_data is not None:
+            self.unprocessedDisciplines += [
+                {'Código': x['Código'],
+                    'Denominação': x['Denominação']}
+                for x in table_data
+            ]
+            self.disciplines.append([
+                Discipline(x['Código'], x['Denominação'], self.code)
+                for x in table_data
+            ])
         print("[Departamemt {}] Finished".format(self.name))
