@@ -35,11 +35,9 @@ class Class():
     def extractClassName(raw_html):
         # returns the text present on the table
         # access respecting the HTML order
-        td_list = raw_html.find_all('td')
-        for td in td_list:
-            if td.has_attr('class') and td['class'] == ['turma']:
-                class_name = td.text
-        return class_name
+        td_list = raw_html.find_all('td', 'turma')
+
+        return td_list[0].text
 
     @staticmethod
     def extractVacancies(raw_html):
