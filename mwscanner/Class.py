@@ -31,15 +31,17 @@ class Class():
         # teachers is a list
         self.teachers = teachers
 
+    @staticmethod
     def extractClassName(raw_html):
         # returns the text present on the table
         # access respecting the HTML order
         td_list = raw_html.find_all('td')
-        for i in td_list:
-            if i.has_attr('class') and i['class'] == ['turma']:
-                class_name = i.text
+        for td in td_list:
+            if td.has_attr('class') and td['class'] == ['turma']:
+                class_name = td.text
         return class_name
 
+    @staticmethod
     def extractVacancies(raw_html):
 
         vacancies_table = raw_html.findAll('table')[0]
@@ -54,10 +56,12 @@ class Class():
 
         return vacancies
 
+    @staticmethod
     def extractShift(raw_html):
         # extract class shift
         return raw_html.text
 
+    @staticmethod
     def extractMeetings(raw_html):
         # extract the meetings from the page
         meetings_tables = raw_html.findAll('table')
@@ -80,6 +84,7 @@ class Class():
 
         return meetings
 
+    @staticmethod
     def extractTeachers(raw_html):
         return [x.text for x in raw_html.select('tr')]
 
