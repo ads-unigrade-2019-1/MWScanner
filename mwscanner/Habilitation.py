@@ -26,7 +26,7 @@ class Habilitation(UrlLoaderMixin):
         # disciplines from habilitation flow
         return BASE_URL + 'graduacao/fluxo.aspx?cod={}'.format(self.code)
 
-    def buildLinkList(self):
+    def buildFromHtml(self):
         # This method builds the list of disciplines that belongs
         # to this departament. This list will be later used to
         # process the creation of the Discipline object.

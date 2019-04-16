@@ -17,7 +17,7 @@ def proccessHabilitations(campus: Campus):
     for course in campus.courses:
         for habilitation in course.habilitations:
 
-            async_tasks.append(t_pool.apply_async(habilitation.buildLinkList))
+            async_tasks.append(t_pool.apply_async(habilitation.buildFromHtml))
             all_habilitations.append(habilitation)
 
     [x.wait() for x in async_tasks]
@@ -34,7 +34,7 @@ def proccessDisciplines(campus: Campus):
 
     def departament_scanner(departament):
 
-        departament.buildLinkList()
+        departament.buildFromHtml()
 
         for unprocessed_disclipline in departament.unprocessedDisciplines:
             departament.unprocessedDisciplines.remove(

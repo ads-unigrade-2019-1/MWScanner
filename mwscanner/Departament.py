@@ -26,7 +26,7 @@ class Department(TableReaderMixin, UrlLoaderMixin):
         # disciplines from the department code
         return BASE_URL + 'graduacao/oferta_dis.aspx?cod={}'.format(self.code)
 
-    def buildLinkList(self):
+    def buildFromHtml(self):
         # This method builds the list of disciplines that belongs
         # to this departament. This list will be later used to
         # process the creation of the Discipline object.
