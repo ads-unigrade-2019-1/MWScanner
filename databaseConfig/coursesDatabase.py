@@ -19,7 +19,7 @@ class CourseDb(Database):
                 habilitation_list.append(habilitation.code)
 
             current_course.update({
-                'course': course.code,
+                'code': course.code,
                 'campus': course.campus,
                 'name': course.name,
                 'shift': course.shift,
