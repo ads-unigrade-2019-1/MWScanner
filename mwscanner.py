@@ -11,16 +11,30 @@ def proccessHabilitations(campus: Campus):
 
     all_habilitations = []
 
-    t_pool = ThreadPool(processes=4)
+    t_pool = ThreadPool(processes=8)
     async_tasks = []
 
-    for course in campus.courses:
+    courses_len = len(campus.courses)
+
+    for index, course in enumerate(campus.courses):
+
         for habilitation in course.habilitations:
 
-            async_tasks.append(t_pool.apply_async(habilitation.buildFromHtml))
+            async_tasks.append(
+                (t_pool.apply_async(habilitation.buildLinkList), index + 1)
+            )
             all_habilitations.append(habilitation)
 
-    [x.wait() for x in async_tasks]
+    for x in async_tasks:
+
+        x[0].wait()
+
+        print(
+            "[HABILITATIONS] Course Progress: {} of {} ({}%)".format(
+                x[1],
+                courses_len,
+                round(x[1]*100/courses_len, 2)
+            ))
 
     return all_habilitations
 
@@ -29,8 +43,10 @@ def proccessDisciplines(campus: Campus):
 
     all_disciplines = []
 
-    t_pool = ThreadPool(processes=8)
+    t_pool = ThreadPool(processes=16)
     async_tasks = []
+
+    departments_len = len(campus.departments)
 
     def departament_scanner(departament):
 
@@ -52,12 +68,25 @@ def proccessDisciplines(campus: Campus):
 
     # prints departament information
     # and then build the list of disciplines that each departament have
-    for departament in campus.departments:
+    for index, departament in enumerate(campus.departments):
+
         async_tasks.append(
-            t_pool.apply_async(departament_scanner, (departament,))
+            (
+                t_pool.apply_async(departament_scanner, (departament,)),
+                index + 1
+            )
         )
 
-    [x.wait() for x in async_tasks]
+    for x in async_tasks:
+
+        x[0].wait()
+
+        print(
+            "[Disciplines] Departament Progress: {} of {} ({}%)".format(
+                x[1],
+                departments_len,
+                round(x[1]*100/departments_len, 2)
+            ))
 
     return all_disciplines
 
@@ -89,6 +118,11 @@ if __name__ == '__main__':
 
         list_all_habilitations = list_all_habilitations.get()
         list_all_disciplines = list_all_disciplines.get()
+
+        print(list_all_campus_courses)
+        print(list_all_campus_departments)
+        print(list_all_disciplines)
+        print(list_all_habilitations)
 
     except KeyboardInterrupt:
         print('Interruption')
