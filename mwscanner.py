@@ -21,7 +21,7 @@ def proccessHabilitations(campus: Campus):
         for habilitation in course.habilitations:
 
             async_tasks.append(
-                (t_pool.apply_async(habilitation.buildLinkList), index + 1)
+                (t_pool.apply_async(habilitation.buildFromHtml), index + 1)
             )
             all_habilitations.append(habilitation)
 
