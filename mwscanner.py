@@ -2,6 +2,7 @@ from multiprocessing.pool import ThreadPool
 
 from mwscanner.Campus import Campus
 from mwscanner.Discipline import Discipline
+from databaseConfig.SaveData import SaveData
 
 
 BASE_URL = 'https://matriculaweb.unb.br/'
