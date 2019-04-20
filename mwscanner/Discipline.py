@@ -112,14 +112,14 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
 
             req = req.text.strip()
 
-            if req == '' or req == 'E':
+            if req == '' or req == 'OU':
                 continue
 
             if append_next:
                 found_requirements[-1].append(req)
                 append_next = False
 
-            elif req == 'OU':
+            elif req == 'E':
                 if type(found_requirements[-1]) is not list:
                     found_requirements[-1] = [found_requirements[-1]]
                 append_next = True
