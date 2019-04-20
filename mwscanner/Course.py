@@ -83,4 +83,5 @@ class Course(UrlLoaderMixin):
                     codes[i], names[i], degrees[i]
                 )
             )
-            print("[COURSE {}] Got Habilitation {}".format(self.name, names[i]))
+            print("[COURSE {}] Got Habilitation {}".format(
+                self.name, names[i]))

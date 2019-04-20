@@ -138,12 +138,12 @@ class UrlLoaderMixin:
             if response is None:
 
                 if fails >= 3:
-                    print("Failed to get response after retries, exiting...")
+                    print(
+                        "Failed to get response for {} after retries, exiting...".format(url))
                     sys.exit(1)
 
-                print("Failed to get response, trying again... ({})".format(fails+1))
+                print("Failed to get response for {}, trying again... ({})".format(
+                    url, fails+1))
                 return self.getFromUrl(url, fails+1)
-
-
 
         return response

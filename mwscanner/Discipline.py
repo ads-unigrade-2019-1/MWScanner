@@ -65,8 +65,6 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         if response.status_code != 200:
             return
 
-        found_classes = []
-
         # Make the parse for html
         # And read the table indentify in parse html
         raw_html = BeautifulSoup(response.content, 'lxml')
@@ -85,13 +83,15 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         # it can be discarded before the next step
         del classes_tables[0]
 
+        classes_names = []
+
         for class_table in classes_tables:
             c = Class.buildFromHtml(class_table, self)
-            found_classes.append(c)
+            self.classes.append(c)
+            classes_names.append(c.name)
 
-            print('[Discipline {}] Class {} finished'.format(self.name, c.name))
-
-        print('[Discipline {}] finished'.format(self.name))
+        print('[Discipline {}] finished with classes {}'.format(
+            self.name, classes_names))
 
     def getRequirements(self):
 
@@ -107,7 +107,6 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
 
         found_requirements = []
         append_next = False
-
 
         for req in requirements_table_row.findAll('strong'):
 

@@ -65,3 +65,4 @@ class Habilitation(UrlLoaderMixin):
             )
 
         print("[Habilitation {}] Finished".format(self.name))
+        return self

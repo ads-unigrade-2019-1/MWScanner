@@ -52,8 +52,6 @@ class Campus(TableReaderMixin, UrlLoaderMixin):
         if response.status_code != 200:
             return None
 
-        list_courses = []
-
         # Make the parse for html using beautifulsoap
         # Read the data from table using the parser
         raw_html = BeautifulSoup(response.content, 'html.parser')
@@ -63,18 +61,19 @@ class Campus(TableReaderMixin, UrlLoaderMixin):
         # column in table and create a instance from course
         # and save in list courses from campus
         for data in table_data:
-            self.courses.append(
-                Course(
-                    campus=campus_code,
-                    code=data['Código'],
-                    name=data['Denominação'],
-                    shift=data['Turno'],
-                    modality=data['Modalidade']
-                )
+            c = Course(
+                campus=campus_code,
+                code=data['Código'],
+                name=data['Denominação'],
+                shift=data['Turno'],
+                modality=data['Modalidade']
             )
-            list_courses.append(data)
 
-        return list_courses
+            self.courses.append(
+                c
+            )
+
+        return self.courses
 
     # This method using the function above to create
     # the list of all courses and create an dict for
@@ -99,8 +98,6 @@ class Campus(TableReaderMixin, UrlLoaderMixin):
         if response.status_code != 200:
             return None
 
-        list_departments = []
-
         # Make the parse for html
         # And read the table identify in parse html
         raw_html = BeautifulSoup(response.content, 'html.parser')
@@ -109,18 +106,17 @@ class Campus(TableReaderMixin, UrlLoaderMixin):
         # For all row in table, an object department
         # is create and added in list of departments
         for data in table_data:
-            self.departments.append(
-                Department(
-                    campus=campus_code,
-                    code=data['Código'],
-                    name=data['Denominação'],
-                    initials=data['Sigla']
-                )
+            d = Department(
+                campus=campus_code,
+                code=data['Código'],
+                name=data['Denominação'],
+                initials=data['Sigla']
             )
-            list_departments.append(data)
-            print("[CAMPUS] Found departament {}".format(data['Denominação']))
 
-        return list_departments
+            self.departments.append(d)
+            print("[CAMPUS] Found department {}".format(d.name))
+
+        return self.departments
 
     # This method using the function above to create
     # the list of all departments and return an dictionary for

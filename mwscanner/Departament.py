@@ -51,13 +51,10 @@ class Department(TableReaderMixin, UrlLoaderMixin):
         # the table_data can be empty
 
         if table_data is not None:
-            self.unprocessedDisciplines += [
-                {'Código': x['Código'],
-                    'Denominação': x['Denominação']}
-                for x in table_data
-            ]
-            self.disciplines.append([
-                Discipline(x['Código'], x['Denominação'], self.code)
-                for x in table_data
-            ])
+            for x in table_data:
+                self.disciplines.append(
+                    Discipline(x['Código'], x['Denominação'], self.code)
+                )
+
         print("[Departamemt {}] Finished".format(self.name))
+        return self
