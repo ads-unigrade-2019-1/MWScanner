@@ -1,11 +1,18 @@
-engines:
-     pep8:
-       enabled: true
-   ratings:
-     paths:
-      -"**.py"
+version: 2
 
 plugins:
   pep8:
-    enabled: true.
-    
+    enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - python
+  fixme:
+    enabled: true
+  radon:
+    enabled: true
+ratings:
+  paths:
+  - "**.py"
+
