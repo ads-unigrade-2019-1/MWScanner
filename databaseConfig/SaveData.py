@@ -1,5 +1,5 @@
 from databaseConfig.coursesDatabase import CourseDb
-from databaseConfig.departamentDatabase import DepartamentDB
+from databaseConfig.departmentDatabase import departmentDB
 from databaseConfig.disciplineDatabase import DisciplineDb
 from databaseConfig.habilitationDatabase import HabilitationDb
 from databaseConfig.classDatabase import ClassDb

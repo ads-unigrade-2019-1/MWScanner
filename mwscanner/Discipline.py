@@ -14,7 +14,7 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
     # matriculaweb. it contains data about the discipline
     # and holds its classes and requirements
 
-    def __init__(self, code, name, departament):
+    def __init__(self, code, name, department):
 
         # name of the discipline
         self.name = name
@@ -23,8 +23,8 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         # (it's unique among disciplines)
         self.code = code
 
-        # departament to which this discipline belongs
-        self.departament = departament
+        # department to which this discipline belongs
+        self.department = department
 
         # aumount of credits that this discipline
         # is worth
@@ -49,7 +49,7 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         # This method take the url of the
         # disciplines from the department code
         return BASE_URL + 'graduacao/oferta_dados.aspx?cod={}&dep={}'.format(
-            self.code, self.departament)
+            self.code, self.department)
 
     def getDisciplineURL(self):
         # This method take the url of the

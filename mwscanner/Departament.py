@@ -28,7 +28,7 @@ class Department(TableReaderMixin, UrlLoaderMixin):
 
     def buildFromHtml(self):
         # This method builds the list of disciplines that belongs
-        # to this departament. This list will be later used to
+        # to this department. This list will be later used to
         # process the creation of the Discipline object.
 
         response = self.getFromUrl(self.getDisciplineListURL())
@@ -42,7 +42,7 @@ class Department(TableReaderMixin, UrlLoaderMixin):
 
         # in table there are 3 types of data:
         # 'Código': the code of a discipline that belongs to the
-        #           current departament
+        #           current department
         # 'Denominação': name of the discipline
         # 'Ementa': garbage (it was a icon with a link on
         #           the table, but those information where

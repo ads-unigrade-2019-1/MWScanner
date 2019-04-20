@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from requests import get
 
 from mwscanner.Course import Course
-from mwscanner.Departament import Department
+from mwscanner.Department import Department
 from mwscanner.Mixins import TableReaderMixin, UrlLoaderMixin
 from mwscanner import BASE_URL
 
@@ -35,7 +35,7 @@ class Campus(TableReaderMixin, UrlLoaderMixin):
     def getCampusCoursesUrl(self, campus):
         return BASE_URL + 'graduacao/curso_rel.aspx?cod={}'.format(campus)
 
-    # This method return all the Departaments present
+    # This method return all the departments present
     # in campus passed by parameter
     def getCampusDepartmentsUrl(self, campus):
         return BASE_URL + 'graduacao/oferta_dep.aspx?cod={}'.format(campus)
@@ -88,10 +88,10 @@ class Campus(TableReaderMixin, UrlLoaderMixin):
         return self.all_campus_courses
 
     # This method using the index campus and access
-    # all the departament for that specifc campus
+    # all the department for that specifc campus
     def getCampusDepartments(self, campus_code):
 
-        # Make response and initialize the list of departaments
+        # Make response and initialize the list of departments
 
         response = self.getFromUrl(self.getCampusDepartmentsUrl(campus_code))
 
@@ -106,7 +106,7 @@ class Campus(TableReaderMixin, UrlLoaderMixin):
         raw_html = BeautifulSoup(response.content, 'html.parser')
         table_data = self.readSimpleTableFromHTML(raw_html)
 
-        # For all row in table, an object Departament
+        # For all row in table, an object department
         # is create and added in list of departments
         for data in table_data:
             self.departments.append(
