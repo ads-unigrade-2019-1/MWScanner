@@ -4,28 +4,23 @@ from databaseConfig.dbConnection import Database
 class CourseDb(Database):
 
     @staticmethod
-    def saveCourses(campus):
+    def saveCourses(courses):
 
-        #db = self.defineConnections
         db = Database.defineConnections()
         collection_course = db['courses']
 
-        for course in campus.courses:
+        for campus, course_list in courses.items():
 
-            current_course = {}
-            habilitation_list = []
+            print("Saving courses for campus {}...".format(campus))
 
-            for habilitation in course.habilitations :
-                habilitation_list.append(habilitation.code)
+            for course in course_list:
+                current_course = {
+                    'code': course.code,
+                    'campus': course.campus,
+                    'name': course.name,
+                    'shift': course.shift,
+                    'modality': course.modality,
+                    'habilitations': [x.code for x in course.habilitations]
+                }
 
-            current_course.update({
-                'code': course.code,
-                'campus': course.campus,
-                'name': course.name,
-                'shift': course.shift,
-                'modality': course.modality,
-                'habilitation': habilitation_list
-            })
-
-            collection_course.insert_one(current_course)
-    
+                collection_course.insert_one(current_course)
