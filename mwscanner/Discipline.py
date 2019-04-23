@@ -30,8 +30,6 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         # is worth
         self.credits = None
 
-        # self.category = category
-
         # list with the Classes objects for this discipline
         self.classes = []
 
@@ -71,6 +69,7 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
             'small', text='(Teor-Prat-Ext-Est)')[0].parent.parent
         discipline_credits_td = credits_tr.findAll('td')
         discipline_credits = discipline_credits_td[0].text
+
         self.credits = discipline_credits
 
     def getClassesData(self):

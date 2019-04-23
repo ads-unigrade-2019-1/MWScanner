@@ -23,7 +23,8 @@ class DisciplineDb(Database):
                 'code': discipline.code,
                 'department': discipline.department,
                 'classes': classes,
-                'requirements': discipline.requirements
+                'requirements': discipline.requirements,
+                'credits': discipline.credits
             })
 
             for c in discipline.classes:
