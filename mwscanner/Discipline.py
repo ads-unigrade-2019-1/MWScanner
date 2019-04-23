@@ -28,7 +28,7 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
 
         # aumount of credits that this discipline
         # is worth
-        # self.credits = discipline_credits
+        self.credits = None
 
         # self.category = category
 
@@ -42,6 +42,7 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         # for the required disciplines
         self.requirements = []
 
+        self.getCredits()
         self.getClassesData()
         self.getRequirements()
 
@@ -56,6 +57,21 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         # disciplines from the department code
         return BASE_URL + 'graduacao/disciplina.aspx?cod={}'.format(
             self.code)
+
+    def getCredits(self):
+
+        response = self.getFromUrl(self.getDisciplineOfferURL())
+
+        if response.status_code != 200:
+            return
+
+        raw_html = BeautifulSoup(response.content, 'lxml')
+
+        credits_tr = raw_html.findAll(
+            'small', text='(Teor-Prat-Ext-Est)')[0].parent.parent
+        discipline_credits_td = credits_tr.findAll('td')
+        discipline_credits = discipline_credits_td[0].text
+        self.credits = discipline_credits
 
     def getClassesData(self):
 
