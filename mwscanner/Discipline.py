@@ -89,7 +89,9 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
             c = Class.buildFromHtml(class_table, self)
             found_classes.append(c)
 
-            print('[Discipline {}] Class {} finished'.format(self.name, c.name))
+            print(
+                '[Discipline {}] Class {} finished'.format(self.name, c.name)
+            )
 
         print('[Discipline {}] finished'.format(self.name))
 
@@ -107,7 +109,6 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
 
         found_requirements = []
         append_next = False
-
 
         for req in requirements_table_row.findAll('strong'):
 
