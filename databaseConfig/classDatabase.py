@@ -4,28 +4,16 @@ from databaseConfig.dbConnection import Database
 class ClassDb(Database):
 
     @staticmethod
-    def saveClass(campus):
+    def saveClass(class_object):
 
         db = Database.defineConnections()
         collection_classes = db['classes']
 
-        for departament in campus.departments:
-
-            departament.buildLinkList()
-
-            for discipline in departament.disciplines:
-
-                for d in discipline: 
-
-                    for classe in d.classes:
-
-                        collection_classes.insert_one({
-                            'name': classe.name,
-                            'vacancies': classe.vacancies,
-                            'discipline': classe.discipline.code,
-                            'meetings': classe.meetings,
-                            'shift': classe.shift,
-                            'teachers': classe.teachers
-                        })
-                    
-    
+        collection_classes.insert_one({
+            'name': class_object.name,
+            'vacancies': class_object.vacancies,
+            'discipline': class_object.discipline.code,
+            'meetings': class_object.meetings,
+            'shift': class_object.shift,
+            'teachers': class_object.teachers
+        })

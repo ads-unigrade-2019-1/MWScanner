@@ -28,7 +28,7 @@ class Habilitation(UrlLoaderMixin):
 
     def buildFromHtml(self):
         # This method builds the list of disciplines that belongs
-        # to this departament. This list will be later used to
+        # to this department. This list will be later used to
         # process the creation of the Discipline object.
 
         response = self.getFromUrl(self.getDisciplineListURL())
@@ -65,3 +65,4 @@ class Habilitation(UrlLoaderMixin):
             )
 
         print("[Habilitation {}] Finished".format(self.name))
+        return self

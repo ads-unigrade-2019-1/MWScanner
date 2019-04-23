@@ -1,15 +1,28 @@
 from databaseConfig.coursesDatabase import CourseDb
-from databaseConfig.departamentDatabase import DepartamentDB
+from databaseConfig.departmentDatabase import departmentDB
 from databaseConfig.disciplineDatabase import DisciplineDb
 from databaseConfig.habilitationDatabase import HabilitationDb
-from databaseConfig.classDatabase import ClassDb
+
+from multiprocessing.pool import ThreadPool
+
 
 class SaveData:
 
     @staticmethod
-    def saveData(campus):
-        ClassDb.saveClass(campus)
-        CourseDb.saveCourses(campus)
-        DepartamentDB.saveDepartament(campus)
-        DisciplineDb.saveDiscipline(campus)
-        HabilitationDb.saveHabilitation(campus)
+    def saveData(courses, departments, habilitations, disciplines):
+
+        print('Saving to DB...')
+
+        print('Saving courses...')
+        CourseDb.saveCourses(courses)
+
+        print('Saving departments...')
+        departmentDB.savedepartment(departments)
+
+        print('Saving disciplines and classes...')
+        DisciplineDb.saveDiscipline(disciplines)
+
+        print('Saving habilitations...')
+        HabilitationDb.saveHabilitation(habilitations)
+
+        print("Wrinting to db done")
