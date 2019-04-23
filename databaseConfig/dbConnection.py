@@ -18,4 +18,13 @@ class Database:
 
         client = MongoClient(url)
         db = client[client_name]
+
+        # Remove all the data in collections
+        # before the save 
+        db['classes'].remove({})
+        db['courses'].remove({})
+        db['departments'].remove({})
+        db['disciplines'].remove({})
+        db['habilitations'].remove({})
+
         return db
