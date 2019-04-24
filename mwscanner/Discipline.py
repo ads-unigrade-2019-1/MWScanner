@@ -64,9 +64,13 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
             return
 
         raw_html = BeautifulSoup(response.content, 'lxml')
+        credits_th = raw_html.findAll(
+            'small', text='(Teor-Prat-Ext-Est)')
 
-        credits_tr = raw_html.findAll(
-            'small', text='(Teor-Prat-Ext-Est)')[0].parent.parent
+        if len(credits_th) == 0:
+            return
+
+        credits_tr = credits_th[0].parent.parent
         discipline_credits_td = credits_tr.findAll('td')
         discipline_credits = discipline_credits_td[0].text
 
