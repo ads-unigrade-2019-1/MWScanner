@@ -10,11 +10,19 @@ class departmentDB(Database):
         db = Database.defineConnections()
         collection_department = db['departments']
 
+        old_size_list = 0
+
         for campus, department_list in departments.items():
 
             print("Saving departments for campus {}...".format(campus))
 
-            for department in department_list:
+            size_list = len(department_list) - 1
+
+            department_set = department_list[old_size_list: size_list] 
+
+            old_size_list = size_list
+
+            for department in department_set:
 
                 current_department = {
                     'campus': department.campus,
