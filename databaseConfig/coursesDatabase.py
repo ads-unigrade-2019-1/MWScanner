@@ -15,7 +15,7 @@ class CourseDb(Database):
 
             print("Saving courses for campus {}...".format(campus))
 
-            size_list = len(course_list) - 1
+            size_list = len(course_list)
 
             courses_set = course_list[old_size_list: size_list]
 
