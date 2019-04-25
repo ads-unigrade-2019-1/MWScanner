@@ -4,7 +4,7 @@ import os
 
 class Database:
 
-    @staticmethod  
+    @staticmethod
     def defineConnections():
 
         url = 'mongodb://localhost:27017/'

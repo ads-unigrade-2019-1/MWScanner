@@ -15,7 +15,7 @@ class SaveData:
         db = Database.defineConnections()
 
         # Remove all the data in collections
-        # before the save 
+        # before the save
         db['classes'].remove({})
         db['courses'].remove({})
         db['departments'].remove({})

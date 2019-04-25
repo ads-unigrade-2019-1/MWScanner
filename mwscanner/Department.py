@@ -56,5 +56,5 @@ class Department(TableReaderMixin, UrlLoaderMixin):
                     Discipline(x['Código'], x['Denominação'], self.code)
                 )
 
-        print("[Departamemt {}] Finished".format(self.name))
+        print("[Department {}] Finished".format(self.name))
         return self

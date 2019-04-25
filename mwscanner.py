@@ -39,7 +39,6 @@ def proccessHabilitations(campus: Campus):
                 round(x[1]*100/courses_len, 2)
             ))
 
-
     t_pool.terminate()
     return all_habilitations
 

@@ -6,7 +6,7 @@ class departmentDB(Database):
     @staticmethod
     def savedepartment(departments):
 
-        #db = self.defineConnections
+        # db = self.defineConnections
         db = Database.defineConnections()
         collection_department = db['departments']
 
@@ -18,7 +18,7 @@ class departmentDB(Database):
 
             size_list = len(department_list) - 1
 
-            department_set = department_list[old_size_list: size_list] 
+            department_set = department_list[old_size_list: size_list]
 
             old_size_list = size_list
 
