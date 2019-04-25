@@ -16,7 +16,7 @@ class departmentDB(Database):
 
             print("Saving departments for campus {}...".format(campus))
 
-            size_list = len(department_list) - 1
+            size_list = len(department_list)  
 
             department_set = department_list[old_size_list: size_list]
 
