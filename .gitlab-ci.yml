@@ -1,0 +1,13 @@
+image: python
+services:
+- mongo
+before_script:
+ - pip install -r requirements.txt
+ - export DB_URL=$DB_URL_START$DB_USER:$DB_PASSWORD$MLAB_HOST
+
+deploy:
+  stage: deploy
+  script:
+  - python mwscanner.py
+  
+  

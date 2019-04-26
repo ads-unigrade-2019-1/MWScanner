@@ -1,3 +1,5 @@
+import sys
+
 from multiprocessing.pool import ThreadPool
 
 from mwscanner.Campus import Campus
@@ -24,11 +26,11 @@ def proccessHabilitations(campus: Campus):
             async_tasks.append(
                 (t_pool.apply_async(habilitation.buildFromHtml), index + 1)
             )
-            all_habilitations.append(habilitation)
 
     for x in async_tasks:
 
-        x[0].wait()
+        habilitations = x[0].get()
+        all_habilitations.append(habilitations)
 
         print(
             "[HABILITATIONS] Course Progress: {} of {} ({}%)".format(
@@ -37,6 +39,7 @@ def proccessHabilitations(campus: Campus):
                 round(x[1]*100/courses_len, 2)
             ))
 
+    t_pool.terminate()
     return all_habilitations
 
 
@@ -49,59 +52,47 @@ def proccessDisciplines(campus: Campus):
 
     departments_len = len(campus.departments)
 
-    def departament_scanner(departament):
-
-        departament.buildFromHtml()
-
-        for unprocessed_disclipline in departament.unprocessedDisciplines:
-            departament.unprocessedDisciplines.remove(
-                unprocessed_disclipline
-            )
-
-            d = Discipline(
-                code=unprocessed_disclipline['Código'],
-                name=unprocessed_disclipline['Denominação'],
-                departament=departament
-            )
-
-            departament.disciplines.append(d)
-            all_disciplines.append(d)
-
-    # prints departament information
-    # and then build the list of disciplines that each departament have
-    for index, departament in enumerate(campus.departments):
+    # prints department information
+    # and then build the list of disciplines that each department have
+    for index, department in enumerate(campus.departments):
 
         async_tasks.append(
             (
-                t_pool.apply_async(departament_scanner, (departament,)),
+                t_pool.apply_async(department.buildFromHtml),
                 index + 1
             )
         )
 
     for x in async_tasks:
 
-        x[0].wait()
+        department = x[0].get()
+
+        if len(department.disciplines) > 0:
+            for d in department.disciplines:
+                all_disciplines.append(d)
 
         print(
-            "[Disciplines] Departament Progress: {} of {} ({}%)".format(
+            "[Disciplines] department Progress: {} of {} ({}%)".format(
                 x[1],
                 departments_len,
                 round(x[1]*100/departments_len, 2)
             ))
 
+    t_pool.terminate()
     return all_disciplines
 
 
 if __name__ == '__main__':
+
     try:
 
-        t_pool = ThreadPool(processes=4)
+        t_pool = ThreadPool(processes=2)
 
         # creates a campus object, it will hold
         # information about the campi on the Matricula Web
         campus = Campus()
 
-        # call methodes to scrap courses and departaments information
+        # call methodes to scrap courses and departments information
         # frow the Web
         list_all_campus_courses = t_pool.apply_async(
             campus.getAllCampusCourses)
@@ -120,10 +111,16 @@ if __name__ == '__main__':
         list_all_habilitations = list_all_habilitations.get()
         list_all_disciplines = list_all_disciplines.get()
 
-        print(list_all_campus_courses)
-        print(list_all_campus_departments)
-        print(list_all_disciplines)
-        print(list_all_habilitations)
+        t_pool.terminate()
+
+        print("Calling db save function...")
+
+        SaveData.saveData(
+            list_all_campus_courses,
+            list_all_campus_departments,
+            list_all_habilitations,
+            list_all_disciplines
+        )
 
     except KeyboardInterrupt:
         print('Interruption')

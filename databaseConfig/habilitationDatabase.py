@@ -4,33 +4,28 @@ from databaseConfig.dbConnection import Database
 class HabilitationDb(Database):
 
     @staticmethod
-    def saveHabilitation(campus):
+    def saveHabilitation(habilitations):
 
-        # db = self.defineConnections
         db = Database.defineConnections()
         collection_habilitation = db['habilitations']
 
-        for course in campus.courses:
-            for habilitation in course.habilitations:
-                current_habilitation = {}
-                disciplines_list = []
+        progress, total = 0, len(habilitations) - 1
+        for habilitation in habilitations:
+            disciplines_list = []
 
-                habilitation.buildLinkList()
+            for period, disciplines in habilitation.disciplines.items():
+                disciplines_list.append(
+                    [d['Código'] for d in disciplines]
+                )
 
-                for key in habilitation.disciplines:
-                    discipline_by_peorid = []
+            current_habilitation = {
+                'code': habilitation.code,
+                'name': habilitation.name + " (" + habilitation.degree + ")",
+                'disciplines': disciplines_list
+            }
 
-                    for discipline in habilitation.disciplines[key]:
-                        discipline_by_peorid.append(discipline['Código'])
-                    
-                    disciplines_list.append({ key: discipline_by_peorid})
+            collection_habilitation.insert_one(current_habilitation)
 
-                current_habilitation.update({
-                    'code': habilitation.code,
-                    'name': habilitation.name + " (" + habilitation.degree + ")",
-                    'disciplines': disciplines_list
-                })
-
-                collection_habilitation.insert_one(current_habilitation)
-
-    
+            progress += 1
+            print("Saving habilitations ({})...".format(
+                (progress*100)/total))

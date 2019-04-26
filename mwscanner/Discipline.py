@@ -14,7 +14,7 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
     # matriculaweb. it contains data about the discipline
     # and holds its classes and requirements
 
-    def __init__(self, code, name, departament):
+    def __init__(self, code, name, department):
 
         # name of the discipline
         self.name = name
@@ -23,14 +23,12 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         # (it's unique among disciplines)
         self.code = code
 
-        # departament to which this discipline belongs
-        self.departament = departament
+        # department to which this discipline belongs
+        self.department = department
 
         # aumount of credits that this discipline
         # is worth
-        # self.credits = discipline_credits
-
-        # self.category = category
+        self.credits = None
 
         # list with the Classes objects for this discipline
         self.classes = []
@@ -42,6 +40,7 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         # for the required disciplines
         self.requirements = []
 
+        self.getCredits()
         self.getClassesData()
         self.getRequirements()
 
@@ -49,13 +48,33 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         # This method take the url of the
         # disciplines from the department code
         return BASE_URL + 'graduacao/oferta_dados.aspx?cod={}&dep={}'.format(
-            self.code, self.departament)
+            self.code, self.department)
 
     def getDisciplineURL(self):
         # This method take the url of the
         # disciplines from the department code
         return BASE_URL + 'graduacao/disciplina.aspx?cod={}'.format(
             self.code)
+
+    def getCredits(self):
+
+        response = self.getFromUrl(self.getDisciplineOfferURL())
+
+        if response.status_code != 200:
+            return
+
+        raw_html = BeautifulSoup(response.content, 'lxml')
+        credits_th = raw_html.findAll(
+            'small', text='(Teor-Prat-Ext-Est)')
+
+        if len(credits_th) == 0:
+            return
+
+        credits_tr = credits_th[0].parent.parent
+        discipline_credits_td = credits_tr.findAll('td')
+        discipline_credits = discipline_credits_td[0].text
+
+        self.credits = discipline_credits
 
     def getClassesData(self):
 
@@ -64,8 +83,6 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         # Verify if the status cod is ok
         if response.status_code != 200:
             return
-
-        found_classes = []
 
         # Make the parse for html
         # And read the table indentify in parse html
@@ -85,13 +102,15 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         # it can be discarded before the next step
         del classes_tables[0]
 
+        classes_names = []
+
         for class_table in classes_tables:
             c = Class.buildFromHtml(class_table, self)
-            found_classes.append(c)
+            self.classes.append(c)
+            classes_names.append(c.name)
 
-            print('[Discipline {}] Class {} finished'.format(self.name, c.name))
-
-        print('[Discipline {}] finished'.format(self.name))
+        print('[Discipline {}] finished with classes {}'.format(
+            self.name, classes_names))
 
     def getRequirements(self):
 
@@ -108,19 +127,18 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         found_requirements = []
         append_next = False
 
-
         for req in requirements_table_row.findAll('strong'):
 
             req = req.text.strip()
 
-            if req == '' or req == 'E':
+            if req == '' or req == 'OU':
                 continue
 
             if append_next:
                 found_requirements[-1].append(req)
                 append_next = False
 
-            elif req == 'OU':
+            elif req == 'E':
                 if type(found_requirements[-1]) is not list:
                     found_requirements[-1] = [found_requirements[-1]]
                 append_next = True
