@@ -16,7 +16,7 @@ class DisciplineDb(Database):
             classes = []
 
             if len(discipline.classes) >= 1:
-                classes = [x.name for x in discipline.classes],
+                classes = [x.name for x in discipline.classes]
 
             collection_discipline.insert_one({
                 'name': discipline.name,

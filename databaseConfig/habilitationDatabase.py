@@ -15,7 +15,8 @@ class HabilitationDb(Database):
 
             for period, disciplines in habilitation.disciplines.items():
                 disciplines_list.append(
-                    {period: [d['Código'] for d in disciplines]})
+                    [d['Código'] for d in disciplines]
+                )
 
             current_habilitation = {
                 'code': habilitation.code,
