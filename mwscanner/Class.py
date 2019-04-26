@@ -7,7 +7,7 @@ class Class():
     # Web. It contains data about the meetings and a
     # connection to the discipline.
 
-    def __init__(self, name, vacancies, discipline, meetings, teachers, shift):
+    def __init__(self, name, vacancies, discipline, meetings, teachers, shift, department):
 
         # name of class, example: "Turma A"
         # this is unique inside a discipline
@@ -30,6 +30,9 @@ class Class():
 
         # teachers is a list
         self.teachers = teachers
+
+        #campus from subject
+        self.department = department
 
     @staticmethod
     def extractClassName(raw_html):
@@ -87,7 +90,7 @@ class Class():
         return [x.text for x in raw_html.select('tr')]
 
     @staticmethod
-    def buildFromHtml(raw_html: BeautifulSoup, discipline):
+    def buildFromHtml(raw_html: BeautifulSoup, discipline, department):
 
         class_data = {}
         extraction_order = [
@@ -113,5 +116,6 @@ class Class():
             })
 
         class_data.update({'discipline': discipline})
+        class_data.update({'department': department})
 
         return Class(**class_data)

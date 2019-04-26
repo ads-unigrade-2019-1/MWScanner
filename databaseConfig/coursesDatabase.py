@@ -29,7 +29,7 @@ class CourseDb(Database):
                     'name': course.name,
                     'shift': course.shift,
                     'modality': course.modality,
-                    'habilitations': [x.code for x in course.habilitations]
+                    'habilitations': [str(x.code) for x in course.habilitations]
                 }
 
                 collection_course.insert_one(current_course)

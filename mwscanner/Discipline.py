@@ -105,7 +105,7 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         classes_names = []
 
         for class_table in classes_tables:
-            c = Class.buildFromHtml(class_table, self)
+            c = Class.buildFromHtml(class_table, self, self.department)
             self.classes.append(c)
             classes_names.append(c.name)
 

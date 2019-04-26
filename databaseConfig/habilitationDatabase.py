@@ -19,7 +19,7 @@ class HabilitationDb(Database):
                 )
 
             current_habilitation = {
-                'code': habilitation.code,
+                'code': str(habilitation.code),
                 'name': habilitation.name + " (" + habilitation.degree + ")",
                 'disciplines': disciplines_list
             }
