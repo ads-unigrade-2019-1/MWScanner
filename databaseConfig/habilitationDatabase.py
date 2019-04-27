@@ -2,12 +2,12 @@ from databaseConfig.dbConnection import Database
 
 
 class HabilitationDb(Database):
-# Class static to save all data related to 
-# Habilitation in Courses
+    # Class static to save all data related to
+    # Habilitation in Courses
     @staticmethod
     def saveHabilitation(habilitations):
-    #This method get the habilitations list, manipulate it 
-    # and insert in mongoDb
+        # This method get the habilitations list, manipulate it
+        # and insert in mongoDb
 
         #  Get the instance from database
         db = Database.defineConnections()

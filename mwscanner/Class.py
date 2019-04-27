@@ -31,7 +31,7 @@ class Class():
         # teachers is a list
         self.teachers = teachers
 
-        #campus from subject
+        # campus from subject
         self.department = department
 
     @staticmethod
@@ -44,14 +44,14 @@ class Class():
 
     @staticmethod
     def extractVacancies(raw_html):
-    # This method extracted and return the vacancies from current class
+        # This method extracted and return the vacancies from current class
         vacancies_table = raw_html.findAll('table')[0]
 
         vacancies_rows = vacancies_table.find_all('tr')
         vacancies = int(vacancies_rows[2].find_all('td')[2].text)
 
-        #chose the row and get the freshaman vacancies and the total vacancies
-        # and sum it 
+        # chose the row and get the freshaman vacancies and the total vacancies
+        # and sum it
         if len(vacancies_rows) > 3:
 
             freshman_vacancies = int(vacancies_rows[5].find_all('td')[2].text)
@@ -91,14 +91,14 @@ class Class():
 
     @staticmethod
     def extractTeachers(raw_html):
-    # Method to get all the teacher from one class
+        # Method to get all the teacher from one class
 
         return [x.text for x in raw_html.select('tr')]
 
     @staticmethod
     def buildFromHtml(raw_html: BeautifulSoup, discipline, department):
-    # Method which get all the atributes from methods above and create a
-    # unique object Class
+        # Method which get all the atributes from methods above and create a
+        # unique object Class
 
         # Get the extracted atributes from methods above
         class_data = {}
@@ -128,6 +128,6 @@ class Class():
 
         class_data.update({'discipline': discipline})
         class_data.update({'department': department})
-        
+
         # returned the object class created
         return Class(**class_data)

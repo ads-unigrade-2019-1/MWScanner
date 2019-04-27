@@ -2,13 +2,13 @@ from databaseConfig.dbConnection import Database
 
 
 class DepartmentDB(Database):
-# This class was created to save all the departments
-# present in UnB
+    # This class was created to save all the departments
+    # present in UnB
 
     @staticmethod
     def savedepartment(departments):
-    # This static method the department list and save
-    # it in database Mongodb
+        # This static method the department list and save
+        # it in database Mongodb
 
         # Get the instance from database connection
         db = Database.defineConnections()
@@ -16,20 +16,20 @@ class DepartmentDB(Database):
 
         old_size_list = 0
 
-        # Run for all the department list 
+        # Run for all the department list
         for campus, department_list in departments.items():
 
             print("Saving departments for campus {}...".format(campus))
 
             # How it comes with the entire list having all the departaments,
             # we split the list according with the campus
-            size_list = len(department_list)  
+            size_list = len(department_list)
 
             department_set = department_list[old_size_list: size_list]
 
             old_size_list = size_list
-            
-            # After the split get the current attributes and 
+
+            # After the split get the current attributes and
             # save all of then in Mongo
             for department in department_set:
 

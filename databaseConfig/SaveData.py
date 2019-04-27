@@ -8,14 +8,14 @@ from multiprocessing.pool import ThreadPool
 
 
 class SaveData:
-# This is only a class intermediate between extraction part
-# and mongoDb 
+    # This is only a class intermediate between extraction part
+    # and mongoDb
 
     @staticmethod
     def saveData(courses, departments, habilitations, disciplines):
-    # This method get all the list come from extraction part
-    # and call the respective function for manipulate and send
-    # the data to database
+        # This method get all the list come from extraction part
+        # and call the respective function for manipulate and send
+        # the data to database
 
         db = Database.defineConnections()
 

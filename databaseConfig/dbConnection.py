@@ -3,13 +3,13 @@ import os
 
 
 class Database:
-# This class was made to create the bridge connection
-# between MongoDb and this application
+    # This class was made to create the bridge connection
+    # between MongoDb and this application
 
     @staticmethod
     def defineConnections():
-    # This method verify the environment which mongo is
-    # and create the instance database 
+        # This method verify the environment which mongo is
+        # and create the instance database
 
         # Url of local Mongo and name of database
         url = 'mongodb://localhost:27017/'
@@ -27,5 +27,5 @@ class Database:
         client = MongoClient(url)
         # Set the name database
         db = client[client_name]
-        
+
         return db

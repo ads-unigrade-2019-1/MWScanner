@@ -2,16 +2,16 @@ from databaseConfig.dbConnection import Database
 
 
 class CourseDb(Database):
-#  This class get the list of courses in some campus
-# from UnB and save it in MongoDb 
+    #  This class get the list of courses in some campus
+    # from UnB and save it in MongoDb
 
     @staticmethod
     def saveCourses(courses):
-    # This method static get the list of courses and 
-    # save it in MongoDb
+        # This method static get the list of courses and
+        # save it in MongoDb
 
         # Instantiate the database connection and
-        # create get the collection course from Mongo 
+        # create get the collection course from Mongo
         db = Database.defineConnections()
         collection_course = db['courses']
 
@@ -29,8 +29,8 @@ class CourseDb(Database):
             courses_set = course_list[old_size_list: size_list]
 
             old_size_list = size_list
-            
-            # Get all the attributes from the current course 
+
+            # Get all the attributes from the current course
             # Save it in mongo collection
             for course in courses_set:
 

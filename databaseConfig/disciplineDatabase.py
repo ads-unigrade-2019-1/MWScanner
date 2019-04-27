@@ -3,8 +3,8 @@ from databaseConfig.classDatabase import ClassDb
 
 
 class DisciplineDb(Database):
-# This class is responsable for get all the 
-# disciplines and save it in Mongodb
+    # This class is responsable for get all the
+    # disciplines and save it in Mongodb
 
     @staticmethod
     def saveDiscipline(disciplines):
@@ -22,7 +22,7 @@ class DisciplineDb(Database):
             # Get all the classes from the current discipline
             if len(discipline.classes) >= 1:
                 classes = [x.name for x in discipline.classes]
-            
+
             # send the attributes with a dict to MongoDb
             collection_discipline.insert_one({
                 'name': discipline.name,
@@ -34,7 +34,7 @@ class DisciplineDb(Database):
             })
 
             # After save the disciplines call the method to
-            # save the class 
+            # save the class
             for c in discipline.classes:
                 ClassDb.saveClass(c)
 

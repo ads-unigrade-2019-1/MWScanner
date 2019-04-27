@@ -57,14 +57,14 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
             self.code)
 
     def getCredits(self):
-    # This method get the credits from current disciplines
+        # This method get the credits from current disciplines
 
         response = self.getFromUrl(self.getDisciplineOfferURL())
 
         if response.status_code != 200:
             return
 
-        # Get the pattern in html evidenced by xxx-xxx-xxx-xxx 
+        # Get the pattern in html evidenced by xxx-xxx-xxx-xxx
         raw_html = BeautifulSoup(response.content, 'lxml')
         credits_th = raw_html.findAll(
             'small', text='(Teor-Prat-Ext-Est)')
@@ -116,7 +116,7 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
             self.name, classes_names))
 
     def getRequirements(self):
-    # This method get all the requirements from the current discipline
+        # This method get all the requirements from the current discipline
 
         response = self.getFromUrl(self.getDisciplineURL())
 
@@ -146,7 +146,7 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
             if append_next:
                 found_requirements[-1].append(req)
                 append_next = False
-            
+
             # If it is E, only append the current to the last element
             # from list of found requirements
             elif req == 'E':
