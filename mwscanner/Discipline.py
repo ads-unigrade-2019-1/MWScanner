@@ -57,12 +57,14 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
             self.code)
 
     def getCredits(self):
+    # This method get the credits from current disciplines
 
         response = self.getFromUrl(self.getDisciplineOfferURL())
 
         if response.status_code != 200:
             return
 
+        # Get the pattern in html evidenced by xxx-xxx-xxx-xxx 
         raw_html = BeautifulSoup(response.content, 'lxml')
         credits_th = raw_html.findAll(
             'small', text='(Teor-Prat-Ext-Est)')
@@ -70,6 +72,7 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         if len(credits_th) == 0:
             return
 
+        # Get the td respected pattern from text filtered
         credits_tr = credits_th[0].parent.parent
         discipline_credits_td = credits_tr.findAll('td')
         discipline_credits = discipline_credits_td[0].text
@@ -113,6 +116,7 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
             self.name, classes_names))
 
     def getRequirements(self):
+    # This method get all the requirements from the current discipline
 
         response = self.getFromUrl(self.getDisciplineURL())
 
@@ -121,12 +125,15 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
 
         raw_html = BeautifulSoup(response.content, 'lxml')
 
+        # Search in html all the table heads with text "Pré requisito"
         requirements_table_row = raw_html.findAll(
             'th', text='Pré-requisitos')[0].parent
 
         found_requirements = []
         append_next = False
 
+        # Use the strong elements to guide the requirement to be
+        # U or E
         for req in requirements_table_row.findAll('strong'):
 
             req = req.text.strip()
@@ -134,15 +141,20 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
             if req == '' or req == 'OU':
                 continue
 
+            # If append next is true we get and append the current
+            # requirement to list of requeriment
             if append_next:
                 found_requirements[-1].append(req)
                 append_next = False
-
+            
+            # If it is E, only append the current to the last element
+            # from list of found requirements
             elif req == 'E':
                 if type(found_requirements[-1]) is not list:
                     found_requirements[-1] = [found_requirements[-1]]
                 append_next = True
-
+            # If there is no element, or is not OU or E, only
+            # add it in list
             else:
                 found_requirements.append(
                     req

@@ -44,12 +44,14 @@ class Class():
 
     @staticmethod
     def extractVacancies(raw_html):
-
+    # This method extracted and return the vacancies from current class
         vacancies_table = raw_html.findAll('table')[0]
 
         vacancies_rows = vacancies_table.find_all('tr')
         vacancies = int(vacancies_rows[2].find_all('td')[2].text)
 
+        #chose the row and get the freshaman vacancies and the total vacancies
+        # and sum it 
         if len(vacancies_rows) > 3:
 
             freshman_vacancies = int(vacancies_rows[5].find_all('td')[2].text)
@@ -76,6 +78,8 @@ class Class():
             final_hour = data[2].text
             room = data[4].text
 
+            # search for all table data in current table
+            # and get the day, current hour from class, room and return it
             meetings.append({
                 'day': day,
                 'init_hour': init_hour,
@@ -87,11 +91,16 @@ class Class():
 
     @staticmethod
     def extractTeachers(raw_html):
+    # Method to get all the teacher from one class
+
         return [x.text for x in raw_html.select('tr')]
 
     @staticmethod
     def buildFromHtml(raw_html: BeautifulSoup, discipline, department):
+    # Method which get all the atributes from methods above and create a
+    # unique object Class
 
+        # Get the extracted atributes from methods above
         class_data = {}
         extraction_order = [
             (Class.extractClassName, 'name'),
@@ -101,6 +110,7 @@ class Class():
             (Class.extractTeachers, 'teachers')
         ]
 
+        # Search for all table rows and get the first one
         inner_table = raw_html.tbody.findAll('tr')[0]
 
         for td in inner_table:
@@ -109,6 +119,7 @@ class Class():
             if len(extraction_order) == 0:
                 break
 
+            # Pop one by one and add in class dict
             step = extraction_order.pop(0)
 
             class_data.update({
@@ -117,5 +128,6 @@ class Class():
 
         class_data.update({'discipline': discipline})
         class_data.update({'department': department})
-
+        
+        # returned the object class created
         return Class(**class_data)
