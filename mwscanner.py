@@ -2,6 +2,7 @@ import sys
 
 from multiprocessing.pool import ThreadPool
 
+from mwscanner.builders.CampusBuilder import CampusBuilder
 from mwscanner.Campus import Campus
 from mwscanner.Discipline import Discipline
 from databaseConfig.SaveData import SaveData
@@ -17,9 +18,9 @@ def proccessHabilitations(campus: Campus):
     t_pool = ThreadPool(processes=8)
     async_tasks = []
 
-    courses_len = len(campus.courses)
+    courses_len = len(campus.getCourses())
 
-    for index, course in enumerate(campus.courses):
+    for index, course in enumerate(campus.getCourses()):
 
         for habilitation in course.habilitations:
 
@@ -50,11 +51,11 @@ def proccessDisciplines(campus: Campus):
     t_pool = ThreadPool(processes=16)
     async_tasks = []
 
-    departments_len = len(campus.departments)
+    departments_len = len(campus.getDepartments())
 
     # prints department information
     # and then build the list of disciplines that each department have
-    for index, department in enumerate(campus.departments):
+    for index, department in enumerate(campus.getDepartments()):
 
         async_tasks.append(
             (
@@ -90,8 +91,8 @@ if __name__ == '__main__':
 
         # creates a campus object, it will hold
         # information about the campi on the Matricula Web
-        campus = Campus()
-
+        campus = CampusBuilder().buildCampus()
+        
         # call methodes to scrap courses and departments information
         # frow the Web
         list_all_campus_courses = t_pool.apply_async(
@@ -113,14 +114,16 @@ if __name__ == '__main__':
 
         t_pool.terminate()
 
+        print(list_all_disciplines)
+
         print("Calling db save function...")
 
-        SaveData.saveData(
+        """SaveData.saveData(
             list_all_campus_courses,
             list_all_campus_departments,
             list_all_habilitations,
             list_all_disciplines
-        )
+        )"""
 
     except KeyboardInterrupt:
         print('Interruption')

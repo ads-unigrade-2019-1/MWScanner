@@ -5,8 +5,8 @@ from bs4 import BeautifulSoup
 from requests import get
 
 from mwscanner import BASE_URL
-from mwscanner.Class import Class
 from mwscanner.Mixins import TableReaderMixin, UrlLoaderMixin
+from mwscanner.builders.ClassBuilder import ClassBuilder
 
 
 class Discipline(TableReaderMixin, UrlLoaderMixin):
@@ -108,9 +108,9 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         classes_names = []
 
         for class_table in classes_tables:
-            c = Class.buildFromHtml(class_table, self, self.department)
+            c = ClassBuilder().buildFromHtml(raw_html=class_table, discipline=self, department=self.department)
             self.classes.append(c)
-            classes_names.append(c.name)
+            classes_names.append(c.getName())
 
         print('[Discipline {}] finished with classes {}'.format(
             self.name, classes_names))
