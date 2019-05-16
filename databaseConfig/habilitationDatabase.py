@@ -19,15 +19,15 @@ class HabilitationDb(Database):
 
             # In all habilitation get the discipline code and add it in
             # list from all disciplines related to habilitation
-            for period, disciplines in habilitation.disciplines.items():
+            for period, disciplines in habilitation.getDisciplines().items():
                 disciplines_list.append(
                     [d['Código'] for d in disciplines]
                 )
 
             # Add the main attributes in dict create a consistent data
             current_habilitation = {
-                'code': str(habilitation.code),
-                'name': habilitation.name + " (" + habilitation.degree + ")",
+                'code': str(habilitation.getCode()),
+                'name': habilitation.getName() + " (" + habilitation.getDegree() + ")",
                 'disciplines': disciplines_list
             }
 

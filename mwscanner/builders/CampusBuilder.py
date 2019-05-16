@@ -5,10 +5,12 @@ from bs4 import BeautifulSoup
 from requests import get
 
 from mwscanner.Course import Course
+from mwscanner.builders.DepartmentBuilder import DepartmentBuilder
 from mwscanner.Department import Department
 from mwscanner.Mixins import TableReaderMixin, UrlLoaderMixin
 from mwscanner.Campus import Campus
 from mwscanner import BASE_URL
+from multiprocessing.dummy import Pool as ThreadPool
 
 # Campus index for guide in url search
 CAMPUS = {
@@ -55,8 +57,10 @@ class CampusBuilder(TableReaderMixin, UrlLoaderMixin):
         # According the row in each table we take the specific
         # column in table and create a instance from course
         # and save in list courses from campus
-        for data in table_data:
-            c = Course(
+
+        def createCourses(data):
+
+            course = Course(
                 campus=campus_code,
                 code=data['Código'],
                 name=data['Denominação'],
@@ -64,9 +68,21 @@ class CampusBuilder(TableReaderMixin, UrlLoaderMixin):
                 modality=data['Modalidade']
             )
 
+            course.getHabilitations(data['Código'])
+
             self.courses.append(
-                c
+                course
             )
+
+            return course
+
+
+
+        pool = ThreadPool(16)
+        c  = pool.map(createCourses, table_data)
+        pool.close()
+        pool.join()
+
 
         return self.courses
 
@@ -102,6 +118,7 @@ class CampusBuilder(TableReaderMixin, UrlLoaderMixin):
 
         # For all row in table, an object department
         # is create and added in list of departments
+        
         for data in table_data:
             d = Department(
                 campus=campus_code,

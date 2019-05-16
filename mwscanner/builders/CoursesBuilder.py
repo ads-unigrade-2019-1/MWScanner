@@ -5,46 +5,22 @@ import requests
 from bs4 import BeautifulSoup
 from requests import get
 
+from mwscanner.Course import Course
+from mwscanner.Mixins import UrlLoaderMixin
 from mwscanner.Habilitation import Habilitation
 from mwscanner.builders.HabilitationBuilder import HabilitationBuilder
-from mwscanner.Mixins import UrlLoaderMixin
-
-
 from mwscanner import BASE_URL
 
+class CourseBuilder(UrlLoaderMixin):
 
-class Course(UrlLoaderMixin):
-    # This class represents a course registered on the Matricula
-    # Web. It has the information about this course.
-
-    def __init__(self, campus, code, name, shift, modality):
-
-        # Campus where this course belongs
-        self.campus = campus
-
-        # Code for the course (unique)
-        self.code = code
-
-        # Course name
-        self.name = name
-
-        # Course shift (Ex: 'Diurno', 'Noturno')
-        self.shift = shift
-
-        # Type of degree this course provides
-        self.modality = modality
-        # Course habilitations, a course curriculum can change
-        # based on its habilitations
-        self.habilitations = []
-
-        # Method to initialize habilitations with course habilitations
-        
+    def __init__(self):
+        pass
 
     def getHabilitations(self, code):
 
         response = self.getFromUrl(
             BASE_URL + 'graduacao/curso_dados.aspx?cod={}'.format(
-                self.code)
+                code)
         )
 
         if response.status_code != 200:
@@ -77,12 +53,15 @@ class Course(UrlLoaderMixin):
                 habilitation_degree = tr.td.text
                 degrees.append(habilitation_degree)
 
+        habilitations = []
+
         # append habilitations data in list
         for i in range(len(codes)):
-            self.habilitations.append(
+            habilitations.append(
                 HabilitationBuilder().buildHabilitation(
                     codes[i], names[i], degrees[i]
                 )
             )
             print("[COURSE {}] Got Habilitation {}".format(
-                self.name, names[i]))
+            '', names[i]))
+    

@@ -44,7 +44,7 @@ class Class():
         if isinstance(vacancies, type(self.__vacancies)):
             self.__vacancies = vacancies
 
-    def getDisciplines(self):
+    def getDiscipline(self):
         return self.__discipline
 
     def setDiscipline(self, discipline):
@@ -72,7 +72,7 @@ class Class():
         if isinstance(teachers, type(self.__teachers)):
             self.teachers = teachers
 
-    def getDepartments(self):
+    def getDepartment(self):
         return self.__department
 
     def setDepartment(self, department):

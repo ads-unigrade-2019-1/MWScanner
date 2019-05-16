@@ -17,15 +17,15 @@ class ClassDb(Database):
 
         # Get the class campus belonged
         department = collection_departments.find_one(
-            {'code': class_object.department})
+            {'code': class_object.getDepartment()})
 
         # Get all the attributes and insert in collection Mongodb
         collection_classes.insert_one({
-            'name': class_object.name,
-            'vacancies': class_object.vacancies,
-            'discipline': class_object.discipline.code,
-            'meetings': class_object.meetings,
-            'shift': class_object.shift,
-            'teachers': class_object.teachers,
+            'name': class_object.getName(),
+            'vacancies': class_object.getVacancies(),
+            'discipline': class_object.getDiscipline(),
+            'meetings': class_object.getMettings(),
+            'shift': class_object.getShift(),
+            'teachers': class_object.getTeachers(),
             'campus': department['campus']
         })

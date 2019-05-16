@@ -1,38 +1,27 @@
-import sys
-
 import requests
 from bs4 import BeautifulSoup
 from requests import get
 
 from mwscanner import BASE_URL
 from mwscanner.Discipline import Discipline
-from mwscanner.builders.DisciplinesBuilder import DisciplinesBuilder
 from mwscanner.Mixins import TableReaderMixin, UrlLoaderMixin
+from mwscanner.Department import Department
+from mwscanner.builders.DisciplinesBuilder import DisciplinesBuilder
 
 
-class Department(TableReaderMixin, UrlLoaderMixin):
+class DepartmentBuilder(TableReaderMixin, UrlLoaderMixin):
 
-    def __init__(self, campus, code, name, initials):
-        # department attributes
-        self.campus = campus
-        self.code = code
-        self.name = name
-        self.initials = initials
-
-        self.disciplines = []
-        self.unprocessedDisciplines = []
-
-    def getDisciplineListURL(self):
+    def getDisciplineListURL(self, code):
         # This method take the url of the
         # disciplines from the department code
-        return BASE_URL + 'graduacao/oferta_dis.aspx?cod={}'.format(self.code)
+        return BASE_URL + 'graduacao/oferta_dis.aspx?cod={}'.format(code)
 
-    def buildFromHtml(self):
+    def buildFromHtml(self, code, name):
         # This method builds the list of disciplines that belongs
         # to this department. This list will be later used to
         # process the creation of the Discipline object.
 
-        response = self.getFromUrl(self.getDisciplineListURL())
+        response = self.getFromUrl(self.getDisciplineListURL(code))
 
         if response.status_code != 200:
             return
@@ -51,11 +40,27 @@ class Department(TableReaderMixin, UrlLoaderMixin):
 
         # the table_data can be empty
 
+        disciplines = []
+
         if table_data is not None:
             for x in table_data:
-                self.disciplines.append(
-                    DisciplinesBuilder().buildDiscipline(x['Código'], x['Denominação'], self.code)
+                disciplines.append(
+                    DisciplinesBuilder().buildDiscipline(
+                        x['Código'], x['Denominação'], code)
                 )
 
-        print("[Department {}] Finished".format(self.name))
-        return self
+        print("[Department {}] Finished".format(name))
+        return disciplines
+
+    def buildDepartment(self,  campus, code, name, initials):
+
+        disciplines = self.buildFromHtml(code, name)
+
+        department = Department()
+        department.setCampus(campus)
+        department.setCode(code)
+        department.setDisciplines(disciplines)
+        department.setIntials(initials)
+        department.setName(name)
+
+        return department

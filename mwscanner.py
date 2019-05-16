@@ -24,23 +24,15 @@ def proccessHabilitations(campus: Campus):
 
         for habilitation in course.habilitations:
 
-            async_tasks.append(
-                (t_pool.apply_async(habilitation.buildFromHtml), index + 1)
-            )
+            all_habilitations.append(habilitation) 
 
-    for x in async_tasks:
+            '''print(
+                "[HABILITATIONS] Course Progress: {} of {} ({}%)".format(
+                    x[1],
+                    courses_len,
+                    round(x[1]*100/courses_len, 2)
+                ))'''
 
-        habilitations = x[0].get()
-        all_habilitations.append(habilitations)
-
-        print(
-            "[HABILITATIONS] Course Progress: {} of {} ({}%)".format(
-                x[1],
-                courses_len,
-                round(x[1]*100/courses_len, 2)
-            ))
-
-    t_pool.terminate()
     return all_habilitations
 
 
@@ -118,12 +110,12 @@ if __name__ == '__main__':
 
         print("Calling db save function...")
 
-        """SaveData.saveData(
+        SaveData.saveData(
             list_all_campus_courses,
             list_all_campus_departments,
             list_all_habilitations,
             list_all_disciplines
-        )"""
+        )
 
     except KeyboardInterrupt:
         print('Interruption')

@@ -38,7 +38,7 @@ class DepartmentDB(Database):
                     'code': department.code,
                     'name': department.name,
                     'initials': department.initials,
-                    'disciplines': [x.code for x in department.disciplines]
+                    'disciplines': [x.getCode() for x in department.disciplines]
                 }
 
                 collection_department.insert_one(current_department)
