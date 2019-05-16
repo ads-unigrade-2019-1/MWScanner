@@ -12,50 +12,49 @@ from mwscanner.Mixins import TableReaderMixin, UrlLoaderMixin
 
 class Department(TableReaderMixin, UrlLoaderMixin):
 
-    def __init__(self, campus, code, name, initials):
+    def __init__(self):
         # department attributes
-        self.campus = campus
-        self.code = code
-        self.name = name
-        self.initials = initials
+        self.__campus = 1
+        self.__code = ""
+        self.__name = ""
+        self.__initials = ""
 
-        self.disciplines = []
-        self.unprocessedDisciplines = []
+        self.__disciplines = []
+        self.__unprocessedDisciplines = []
 
-    def getDisciplineListURL(self):
-        # This method take the url of the
-        # disciplines from the department code
-        return BASE_URL + 'graduacao/oferta_dis.aspx?cod={}'.format(self.code)
+    def getCampus(self):
+        return self.__campus
 
-    def buildFromHtml(self):
-        # This method builds the list of disciplines that belongs
-        # to this department. This list will be later used to
-        # process the creation of the Discipline object.
+    def getCode(self):
+        return self.__code
 
-        response = self.getFromUrl(self.getDisciplineListURL())
+    def getName(self):
+        return self.__name
 
-        if response.status_code != 200:
-            return
+    def getInitials(self):
+        return self.__initials
 
-        # Make the parse for html
-        raw_html = BeautifulSoup(response.content, 'html.parser')
-        table_data = self.readDatatableTableFromHTML(raw_html)
+    def getDisciplines(self):
+        return self.__disciplines
 
-        # in table there are 3 types of data:
-        # 'Código': the code of a discipline that belongs to the
-        #           current department
-        # 'Denominação': name of the discipline
-        # 'Ementa': garbage (it was a icon with a link on
-        #           the table, but those information where
-        #           ignored when scrapping)
+    def setCampus(self, campus):
+        if isinstance(campus, type(self.__campus)):
+            self.__campus = campus
 
-        # the table_data can be empty
+    def setName(self, name):
+        if isinstance(name, type(self.__name)):
+            self.__name = name
 
-        if table_data is not None:
-            for x in table_data:
-                self.disciplines.append(
-                    DisciplinesBuilder().buildDiscipline(x['Código'], x['Denominação'], self.code)
-                )
+    def setInitials(self, initials):
+        if isinstance(initials, type(self.__initials)):
+            self.__initials = initials
 
-        print("[Department {}] Finished".format(self.name))
-        return self
+    def setDisciplines(self, disciplines):
+        if isinstance(disciplines, type(self.__disciplines)):
+            self.__disciplines = disciplines
+
+    def setCode(self, code):
+        if isinstance(code, type(self.__code)):
+            self.__code = code
+
+    

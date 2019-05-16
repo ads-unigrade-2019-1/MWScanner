@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 from requests import get
 
-from mwscanner.Course import Course
+from mwscanner.builders.CoursesBuilder import CourseBuilder
 from mwscanner.builders.DepartmentBuilder import DepartmentBuilder
 from mwscanner.Department import Department
 from mwscanner.Mixins import TableReaderMixin, UrlLoaderMixin
@@ -60,15 +60,13 @@ class CampusBuilder(TableReaderMixin, UrlLoaderMixin):
 
         def createCourses(data):
 
-            course = Course(
+            course = CourseBuilder().builderCourse(
                 campus=campus_code,
                 code=data['Código'],
                 name=data['Denominação'],
                 shift=data['Turno'],
                 modality=data['Modalidade']
             )
-
-            course.getHabilitations(data['Código'])
 
             self.courses.append(
                 course
@@ -118,17 +116,32 @@ class CampusBuilder(TableReaderMixin, UrlLoaderMixin):
 
         # For all row in table, an object department
         # is create and added in list of departments
-        
-        for data in table_data:
-            d = Department(
+
+        def createDepartments(data):
+
+            depart = DepartmentBuilder().buildDepartment(
                 campus=campus_code,
                 code=data['Código'],
                 name=data['Denominação'],
                 initials=data['Sigla']
             )
 
-            self.departments.append(d)
-            print("[CAMPUS] Found department {}".format(d.name))
+            self.departments.append(
+                depart
+            )
+
+            print("[CAMPUS] Found department {}".format(depart.getName()))
+
+            return depart
+
+
+
+        pool = ThreadPool(16)
+        c  = pool.map(createDepartments, table_data)
+        pool.close()
+        pool.join()
+        
+        
 
         return self.departments
 

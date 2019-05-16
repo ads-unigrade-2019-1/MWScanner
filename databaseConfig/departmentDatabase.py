@@ -34,11 +34,11 @@ class DepartmentDB(Database):
             for department in department_set:
 
                 current_department = {
-                    'campus': department.campus,
-                    'code': department.code,
-                    'name': department.name,
-                    'initials': department.initials,
-                    'disciplines': [x.getCode() for x in department.disciplines]
+                    'campus': department.getCampus(),
+                    'code': department.getCode(),
+                    'name': department.getName(),
+                    'initials': department.getInitials(),
+                    'disciplines': [x.getCode() for x in department.getDisciplines()]
                 }
 
                 collection_department.insert_one(current_department)

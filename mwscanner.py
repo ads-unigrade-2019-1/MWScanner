@@ -22,7 +22,7 @@ def proccessHabilitations(campus: Campus):
 
     for index, course in enumerate(campus.getCourses()):
 
-        for habilitation in course.habilitations:
+        for habilitation in course.getHabilitations():
 
             all_habilitations.append(habilitation) 
 
@@ -37,11 +37,8 @@ def proccessHabilitations(campus: Campus):
 
 
 def proccessDisciplines(campus: Campus):
-
+    print('-----------------------------------------------------------------')
     all_disciplines = []
-
-    t_pool = ThreadPool(processes=16)
-    async_tasks = []
 
     departments_len = len(campus.getDepartments())
 
@@ -49,7 +46,10 @@ def proccessDisciplines(campus: Campus):
     # and then build the list of disciplines that each department have
     for index, department in enumerate(campus.getDepartments()):
 
-        async_tasks.append(
+        for discipline in department.getDisciplines():
+            
+            all_disciplines.append(discipline)
+        """async_tasks.append(
             (
                 t_pool.apply_async(department.buildFromHtml),
                 index + 1
@@ -71,7 +71,7 @@ def proccessDisciplines(campus: Campus):
                 round(x[1]*100/departments_len, 2)
             ))
 
-    t_pool.terminate()
+    t_pool.terminate()"""
     return all_disciplines
 
 
@@ -106,7 +106,6 @@ if __name__ == '__main__':
 
         t_pool.terminate()
 
-        print(list_all_disciplines)
 
         print("Calling db save function...")
 

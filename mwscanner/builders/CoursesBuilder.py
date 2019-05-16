@@ -16,7 +16,7 @@ class CourseBuilder(UrlLoaderMixin):
     def __init__(self):
         pass
 
-    def getHabilitations(self, code):
+    def getHabilitations(self, code, name):
 
         response = self.getFromUrl(
             BASE_URL + 'graduacao/curso_dados.aspx?cod={}'.format(
@@ -63,5 +63,21 @@ class CourseBuilder(UrlLoaderMixin):
                 )
             )
             print("[COURSE {}] Got Habilitation {}".format(
-            '', names[i]))
-    
+            name , names[i]))
+
+        return habilitations
+
+    def builderCourse(self, campus, code, name, shift, modality):
+
+        course = Course()
+        course.setCampus(campus)
+        course.setCode(code)
+        course.setHabilitations(self.getHabilitations(code, name))
+        course.setModality(modality)
+        course.setName(name)
+        course.setShift(shift)
+        course.setHabilitations(self.getHabilitations(code, name))
+
+        return course
+        
+
