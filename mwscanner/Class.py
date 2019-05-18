@@ -64,7 +64,7 @@ class Class():
     def setShift(self, shift):
         if isinstance(shift, type(self.__shift)):
             self.__shift = shift
-    
+
     def getTeachers(self):
         return self.__teachers
 

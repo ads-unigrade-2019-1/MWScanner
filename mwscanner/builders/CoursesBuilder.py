@@ -11,6 +11,7 @@ from mwscanner.Habilitation import Habilitation
 from mwscanner.builders.HabilitationBuilder import HabilitationBuilder
 from mwscanner import BASE_URL
 
+
 class CourseBuilder(UrlLoaderMixin):
 
     def __init__(self):
@@ -62,7 +63,7 @@ class CourseBuilder(UrlLoaderMixin):
                 )
             )
             print("[COURSE {}] Got Habilitation {}".format(
-            name , names[i]))
+                name, names[i]))
 
         return habilitations
 
@@ -77,5 +78,3 @@ class CourseBuilder(UrlLoaderMixin):
         course.setShift(shift)
 
         return course
-        
-

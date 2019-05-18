@@ -10,12 +10,12 @@ class Database(object):
 
     @classmethod
     def defineConnections(cls):
-    # Singleton method to create the instatiate only 
-    # one time the object belong to mongodb
+        # Singleton method to create the instatiate only
+        # one time the object belong to mongodb
 
         if cls.__db is None:
             # This method verify the environment which mongo is
-            # and create the instance database 
+            # and create the instance database
 
             # Url of local Mongo and name of database
             url = 'mongodb://localhost:27017/'
@@ -34,5 +34,3 @@ class Database(object):
             cls.__db = client[client_name]
 
         return cls.__db
-
-  

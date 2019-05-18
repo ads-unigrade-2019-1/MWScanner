@@ -9,6 +9,7 @@ from mwscanner.Department import Department
 from mwscanner.builders.DisciplinesBuilder import DisciplinesBuilder
 from multiprocessing.dummy import Pool as ThreadPool
 
+
 class DepartmentBuilder(TableReaderMixin, UrlLoaderMixin):
 
     def getDisciplineListURL(self, code):
@@ -47,7 +48,7 @@ class DepartmentBuilder(TableReaderMixin, UrlLoaderMixin):
             def createCourses(data):
 
                 discipline = DisciplinesBuilder().buildDiscipline(
-                        data['Código'], data['Denominação'], code)
+                    data['Código'], data['Denominação'], code)
 
                 disciplines.append(
                     discipline
@@ -55,13 +56,10 @@ class DepartmentBuilder(TableReaderMixin, UrlLoaderMixin):
 
                 return discipline
 
-
-
             pool = ThreadPool(16)
-            c  = pool.map(createCourses, table_data)
+            c = pool.map(createCourses, table_data)
             pool.close()
             pool.join()
-
 
         print("[Department {}] Finished".format(name))
         return disciplines
@@ -70,7 +68,7 @@ class DepartmentBuilder(TableReaderMixin, UrlLoaderMixin):
 
         disciplines = self.buildFromHtml(code, name)
 
-        department = Department() 
+        department = Department()
         department.setCampus(campus)
         department.setCode(code)
         department.setDisciplines(disciplines)

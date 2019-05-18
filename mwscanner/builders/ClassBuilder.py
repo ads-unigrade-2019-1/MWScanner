@@ -98,7 +98,7 @@ class ClassBuilder:
         class_data.update({'department': department})
 
         # returned the object class created
-        class_set =  Class()
+        class_set = Class()
         class_set.setName(class_data['name'])
         class_set.setVacancies(class_data['vacancies'])
         class_set.setDiscipline(class_data['discipline'])
@@ -108,5 +108,3 @@ class ClassBuilder:
         class_set.setDepartment(class_data['department'])
 
         return class_set
-
-

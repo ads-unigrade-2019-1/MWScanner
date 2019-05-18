@@ -74,13 +74,10 @@ class CampusBuilder(TableReaderMixin, UrlLoaderMixin):
 
             return course
 
-
-
         pool = ThreadPool(16)
-        c  = pool.map(createCourses, table_data)
+        c = pool.map(createCourses, table_data)
         pool.close()
         pool.join()
-
 
         return self.courses
 
@@ -134,14 +131,10 @@ class CampusBuilder(TableReaderMixin, UrlLoaderMixin):
 
             return depart
 
-
-
         pool = ThreadPool(16)
-        c  = pool.map(createDepartments, table_data)
+        c = pool.map(createDepartments, table_data)
         pool.close()
         pool.join()
-        
-        
 
         return self.departments
 

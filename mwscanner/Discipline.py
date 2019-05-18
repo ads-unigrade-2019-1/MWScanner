@@ -65,7 +65,7 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         return self.__credits
 
     def setCredits(self, credit):
-            self.__credits = credit
+        self.__credits = credit
 
     def getClasses(self):
         return self.__classes

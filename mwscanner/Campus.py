@@ -33,4 +33,3 @@ class Campus():
 
     def setDepartments(self, departments):
         self.__departments = departments
-    

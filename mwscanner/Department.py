@@ -56,5 +56,3 @@ class Department(TableReaderMixin, UrlLoaderMixin):
     def setCode(self, code):
         if isinstance(code, type(self.__code)):
             self.__code = code
-
-    

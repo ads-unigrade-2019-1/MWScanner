@@ -33,7 +33,7 @@ class Habilitation():
     def setName(self, name):
         if isinstance(name, type(self.__name)):
             self.__name = name
-    
+
     def setDegree(self, degree):
         if isinstance(degree, type(degree)):
             self.__degree = degree
@@ -41,4 +41,3 @@ class Habilitation():
     def setDisciplines(self, disciplines):
         if isinstance(disciplines, type(self.__disciplines)):
             self.__disciplines = disciplines
-

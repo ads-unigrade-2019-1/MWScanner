@@ -27,7 +27,8 @@ class DisciplinesBuilder(TableReaderMixin, UrlLoaderMixin):
     def getCredits(self, code, department):
         # This method get the credits from current disciplines
 
-        response = self.getFromUrl(self.getDisciplineOfferURL(code, department))
+        response = self.getFromUrl(
+            self.getDisciplineOfferURL(code, department))
 
         if response.status_code != 200:
             return
@@ -49,7 +50,8 @@ class DisciplinesBuilder(TableReaderMixin, UrlLoaderMixin):
 
     def getClassesData(self, code, department, name):
 
-        response = self.getFromUrl(self.getDisciplineOfferURL(code, department))
+        response = self.getFromUrl(
+            self.getDisciplineOfferURL(code, department))
 
         # Verify if the status cod is ok
         if response.status_code != 200:
@@ -75,7 +77,7 @@ class DisciplinesBuilder(TableReaderMixin, UrlLoaderMixin):
 
         classes_names = []
 
-        classes  = []
+        classes = []
 
         for class_table in classes_tables:
             c = ClassBuilder().buildFromHtml(raw_html=class_table,
@@ -146,6 +148,3 @@ class DisciplinesBuilder(TableReaderMixin, UrlLoaderMixin):
         discipline.setDepartment(department)
 
         return discipline
-
-
-        
