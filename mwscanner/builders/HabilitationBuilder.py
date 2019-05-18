@@ -28,6 +28,8 @@ class HabilitationBuilder(UrlLoaderMixin):
         # scrolls through tables with datatable id
         periods_tables = raw_html.find_all(id="datatable")
 
+        disciplines = {}
+
         for period_table in periods_tables:
             # picks up the period information that is in the tablehead
             period_infos = period_table.find_all('th')
@@ -47,8 +49,6 @@ class HabilitationBuilder(UrlLoaderMixin):
                     {'Código': discipline_code,
                         'Nome': discipline_name}
                 )
-
-            disciplines = {}
 
             disciplines.update(
                 {period: period_disciplines}

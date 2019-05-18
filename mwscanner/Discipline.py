@@ -24,7 +24,7 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         self.__code = ""
 
         # department to which this discipline belongs
-        self.__department = "department"
+        self.__department = ""
 
         # aumount of credits that this discipline
         # is worth
@@ -65,18 +65,18 @@ class Discipline(TableReaderMixin, UrlLoaderMixin):
         return self.__credits
 
     def setCredits(self, credit):
-        self.__credits = credit
+            self.__credits = credit
 
     def getClasses(self):
         return self.__classes
 
     def setClasses(self, classes):
-        if isinstance(classes, type(self.__classes)):
+        if isinstance(classes, list):
             self.__classes = classes
 
     def getRequirements(self):
         return self.__requirements
 
     def setRequirements(self, requirements):
-        if isinstance(requirements, type(self.__requirements)):
+        if isinstance(requirements, list):
             self.__requirements = requirements

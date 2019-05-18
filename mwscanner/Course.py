@@ -78,8 +78,7 @@ class Course(UrlLoaderMixin):
             self.__modality = modality 
 
     def setHabilitations (self, Habilitation):
-        if isinstance(Habilitation, type(self.__habilitations)):
-            self.__habilitations = Habilitation 
+        self.__habilitations = Habilitation 
         
 
     

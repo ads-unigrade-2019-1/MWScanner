@@ -45,7 +45,7 @@ class DisciplinesBuilder(TableReaderMixin, UrlLoaderMixin):
         discipline_credits_td = credits_tr.findAll('td')
         discipline_credits = discipline_credits_td[0].text
 
-        self.credits = discipline_credits
+        return discipline_credits
 
     def getClassesData(self, code, department, name):
 
@@ -79,7 +79,7 @@ class DisciplinesBuilder(TableReaderMixin, UrlLoaderMixin):
 
         for class_table in classes_tables:
             c = ClassBuilder().buildFromHtml(raw_html=class_table,
-                                             discipline=self, department=department)
+                                             discipline=code, department=department)
             classes.append(c)
             classes_names.append(c.getName())
 
@@ -133,7 +133,7 @@ class DisciplinesBuilder(TableReaderMixin, UrlLoaderMixin):
                     req
                 )
 
-        self.requirements = found_requirements
+        return found_requirements
 
     def buildDiscipline(self, code, name, department):
 

@@ -56,7 +56,7 @@ class Class():
 
     def setMettings(self, meetings):
         if isinstance(meetings, type(self.__meetings)):
-            self.__meeting = meetings
+            self.__meetings = meetings
 
     def getShift(self):
         return self.__shift
@@ -70,7 +70,7 @@ class Class():
 
     def setTeachers(self, teachers):
         if isinstance(teachers, type(self.__teachers)):
-            self.teachers = teachers
+            self.__teachers = teachers
 
     def getDepartment(self):
         return self.__department

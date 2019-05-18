@@ -26,18 +26,10 @@ def proccessHabilitations(campus: Campus):
 
             all_habilitations.append(habilitation) 
 
-            '''print(
-                "[HABILITATIONS] Course Progress: {} of {} ({}%)".format(
-                    x[1],
-                    courses_len,
-                    round(x[1]*100/courses_len, 2)
-                ))'''
-
     return all_habilitations
 
 
 def proccessDisciplines(campus: Campus):
-    print('-----------------------------------------------------------------')
     all_disciplines = []
 
     departments_len = len(campus.getDepartments())
@@ -49,29 +41,7 @@ def proccessDisciplines(campus: Campus):
         for discipline in department.getDisciplines():
             
             all_disciplines.append(discipline)
-        """async_tasks.append(
-            (
-                t_pool.apply_async(department.buildFromHtml),
-                index + 1
-            )
-        )
-
-    for x in async_tasks:
-
-        department = x[0].get()
-
-        if len(department.disciplines) > 0:
-            for d in department.disciplines:
-                all_disciplines.append(d)
-
-        print(
-            "[Disciplines] department Progress: {} of {} ({}%)".format(
-                x[1],
-                departments_len,
-                round(x[1]*100/departments_len, 2)
-            ))
-
-    t_pool.terminate()"""
+      
     return all_disciplines
 
 

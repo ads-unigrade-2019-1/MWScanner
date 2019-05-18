@@ -32,6 +32,7 @@ class CourseBuilder(UrlLoaderMixin):
         codes = []
         names = []
         degrees = []
+        habilitations = []
 
         # take codes and names from page
         for h4 in raw_html.select('h4'):
@@ -53,13 +54,11 @@ class CourseBuilder(UrlLoaderMixin):
                 habilitation_degree = tr.td.text
                 degrees.append(habilitation_degree)
 
-        habilitations = []
-
         # append habilitations data in list
         for i in range(len(codes)):
             habilitations.append(
                 HabilitationBuilder().buildHabilitation(
-                    codes[i], names[i], degrees[i]
+                    str(codes[i]), names[i], degrees[i]
                 )
             )
             print("[COURSE {}] Got Habilitation {}".format(
@@ -76,7 +75,6 @@ class CourseBuilder(UrlLoaderMixin):
         course.setModality(modality)
         course.setName(name)
         course.setShift(shift)
-        course.setHabilitations(self.getHabilitations(code, name))
 
         return course
         
