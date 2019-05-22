@@ -2,6 +2,7 @@ import sys
 
 from multiprocessing.pool import ThreadPool
 
+from mwscanner.builders.CampusBuilder import CampusBuilder
 from mwscanner.Campus import Campus
 from mwscanner.Discipline import Discipline
 from databaseConfig.SaveData import SaveData
@@ -17,68 +18,30 @@ def proccessHabilitations(campus: Campus):
     t_pool = ThreadPool(processes=8)
     async_tasks = []
 
-    courses_len = len(campus.courses)
+    courses_len = len(campus.getCourses())
 
-    for index, course in enumerate(campus.courses):
+    for index, course in enumerate(campus.getCourses()):
 
-        for habilitation in course.habilitations:
+        for habilitation in course.getHabilitations():
 
-            async_tasks.append(
-                (t_pool.apply_async(habilitation.buildFromHtml), index + 1)
-            )
+            all_habilitations.append(habilitation) 
 
-    for x in async_tasks:
-
-        habilitations = x[0].get()
-        all_habilitations.append(habilitations)
-
-        print(
-            "[HABILITATIONS] Course Progress: {} of {} ({}%)".format(
-                x[1],
-                courses_len,
-                round(x[1]*100/courses_len, 2)
-            ))
-
-    t_pool.terminate()
     return all_habilitations
 
 
 def proccessDisciplines(campus: Campus):
-
     all_disciplines = []
 
-    t_pool = ThreadPool(processes=16)
-    async_tasks = []
-
-    departments_len = len(campus.departments)
+    departments_len = len(campus.getDepartments())
 
     # prints department information
     # and then build the list of disciplines that each department have
-    for index, department in enumerate(campus.departments):
+    for index, department in enumerate(campus.getDepartments()):
 
-        async_tasks.append(
-            (
-                t_pool.apply_async(department.buildFromHtml),
-                index + 1
-            )
-        )
-
-    for x in async_tasks:
-
-        department = x[0].get()
-
-        if len(department.disciplines) > 0:
-            for d in department.disciplines:
-                all_disciplines.append(d)
-
-        print(
-            "[Disciplines] department Progress: {} of {} ({}%)".format(
-                x[1],
-                departments_len,
-                round(x[1]*100/departments_len, 2)
-            ))
-
-    t_pool.terminate()
+        for discipline in department.getDisciplines():
+            
+            all_disciplines.append(discipline)
+      
     return all_disciplines
 
 
@@ -90,8 +53,8 @@ if __name__ == '__main__':
 
         # creates a campus object, it will hold
         # information about the campi on the Matricula Web
-        campus = Campus()
-
+        campus = CampusBuilder().buildCampus()
+        
         # call methodes to scrap courses and departments information
         # frow the Web
         list_all_campus_courses = t_pool.apply_async(
@@ -112,6 +75,7 @@ if __name__ == '__main__':
         list_all_disciplines = list_all_disciplines.get()
 
         t_pool.terminate()
+
 
         print("Calling db save function...")
 

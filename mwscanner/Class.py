@@ -1,23 +1,19 @@
-import re
-from bs4 import BeautifulSoup
-
-
 class Class():
     # This class represents a discipline class on Matricula
     # Web. It contains data about the meetings and a
     # connection to the discipline.
 
-    def __init__(self, name, vacancies, discipline, meetings, teachers, shift, department):
+    def __init__(self):
 
         # name of class, example: "Turma A"
         # this is unique inside a discipline
-        self.name = name
+        self.__name = ''
 
         # number of available vacancies in this class
-        self.vacancies = vacancies
+        self.__vacancies = 0
 
         # discipline in which this class belongs
-        self.discipline = discipline
+        self.__discipline = ""
 
         # a meeting should have the structure:
         # {
@@ -25,109 +21,60 @@ class Class():
         #   day: str
         #   hour: str
         # }
-        self.meetings = meetings
-        self.shift = shift
+        self.__meetings = []
+        self.__shift = ''
 
         # teachers is a list
-        self.teachers = teachers
+        self.__teachers = []
 
         # campus from subject
-        self.department = department
+        self.__department = ""
 
-    @staticmethod
-    def extractClassName(raw_html):
-        # returns the text present on the table
-        # access respecting the HTML order
-        td_list = raw_html.find_all('td', 'turma')
+    def getName(self):
+        return self.__name
 
-        return td_list[0].text
+    def setName(self, name):
+        if isinstance(name, type(self.__name)):
+            self.__name = name
 
-    @staticmethod
-    def extractVacancies(raw_html):
-        # This method extracted and return the vacancies from current class
-        vacancies_table = raw_html.findAll('table')[0]
+    def getVacancies(self):
+        return self.__vacancies
 
-        vacancies_rows = vacancies_table.find_all('tr')
-        vacancies = int(vacancies_rows[2].find_all('td')[2].text)
+    def setVacancies(self, vacancies):
+        if isinstance(vacancies, type(self.__vacancies)):
+            self.__vacancies = vacancies
 
-        # chose the row and get the freshaman vacancies and the total vacancies
-        # and sum it
-        if len(vacancies_rows) > 3:
+    def getDiscipline(self):
+        return self.__discipline
 
-            freshman_vacancies = int(vacancies_rows[5].find_all('td')[2].text)
-            vacancies += freshman_vacancies
+    def setDiscipline(self, discipline):
+        if isinstance(discipline, type(self.__discipline)):
+            self.__discipline = discipline
 
-        return vacancies
+    def getMettings(self):
+        return self.__meetings
 
-    @staticmethod
-    def extractShift(raw_html):
-        # extract class shift
-        return raw_html.text
+    def setMettings(self, meetings):
+        if isinstance(meetings, type(self.__meetings)):
+            self.__meetings = meetings
 
-    @staticmethod
-    def extractMeetings(raw_html):
-        # extract the meetings from the page
-        meetings_tables = raw_html.findAll('table')
-        meetings = []
+    def getShift(self):
+        return self.__shift
 
-        for table in meetings_tables:
-            data = table.findAll('td')
+    def setShift(self, shift):
+        if isinstance(shift, type(self.__shift)):
+            self.__shift = shift
 
-            day = data[0].text
-            init_hour = data[1].text
-            final_hour = data[2].text
-            room = data[4].text
+    def getTeachers(self):
+        return self.__teachers
 
-            # search for all table data in current table
-            # and get the day, current hour from class, room and return it
-            meetings.append({
-                'day': day,
-                'init_hour': init_hour,
-                'final_hour': final_hour,
-                'room': room
-            })
+    def setTeachers(self, teachers):
+        if isinstance(teachers, type(self.__teachers)):
+            self.__teachers = teachers
 
-        return meetings
+    def getDepartment(self):
+        return self.__department
 
-    @staticmethod
-    def extractTeachers(raw_html):
-        # Method to get all the teacher from one class
-
-        return [x.text for x in raw_html.select('tr')]
-
-    @staticmethod
-    def buildFromHtml(raw_html: BeautifulSoup, discipline, department):
-        # Method which get all the atributes from methods above and create a
-        # unique object Class
-
-        # Get the extracted atributes from methods above
-        class_data = {}
-        extraction_order = [
-            (Class.extractClassName, 'name'),
-            (Class.extractVacancies, 'vacancies'),
-            (Class.extractShift, 'shift'),
-            (Class.extractMeetings, 'meetings'),
-            (Class.extractTeachers, 'teachers')
-        ]
-
-        # Search for all table rows and get the first one
-        inner_table = raw_html.tbody.findAll('tr')[0]
-
-        for td in inner_table:
-
-            # if all steps where made
-            if len(extraction_order) == 0:
-                break
-
-            # Pop one by one and add in class dict
-            step = extraction_order.pop(0)
-
-            class_data.update({
-                step[1]: step[0](td)
-            })
-
-        class_data.update({'discipline': discipline})
-        class_data.update({'department': department})
-
-        # returned the object class created
-        return Class(**class_data)
+    def setDepartment(self, department):
+        if isinstance(department, type(self.__department)):
+            self.__department = department

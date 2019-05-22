@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from requests import get
 
 from mwscanner.Habilitation import Habilitation
+from mwscanner.builders.HabilitationBuilder import HabilitationBuilder
 from mwscanner.Mixins import UrlLoaderMixin
 
 
@@ -16,72 +17,65 @@ class Course(UrlLoaderMixin):
     # This class represents a course registered on the Matricula
     # Web. It has the information about this course.
 
-    def __init__(self, campus, code, name, shift, modality):
+    def __init__(self):
 
         # Campus where this course belongs
-        self.campus = campus
+        self.__campus = 1
 
         # Code for the course (unique)
-        self.code = code
+        self.__code = ""
 
         # Course name
-        self.name = name
+        self.__name = ""
 
         # Course shift (Ex: 'Diurno', 'Noturno')
-        self.shift = shift
+        self.__shift = ""
 
         # Type of degree this course provides
-        self.modality = modality
+        self.__modality = ""
         # Course habilitations, a course curriculum can change
         # based on its habilitations
-        self.habilitations = []
+        self.__habilitations = []
 
         # Method to initialize habilitations with course habilitations
-        self.getHabilitations(self.code)
 
-    def getHabilitations(self, code):
+    def getCampus(self):
+        return self.__campus
 
-        response = self.getFromUrl(
-            BASE_URL + 'graduacao/curso_dados.aspx?cod={}'.format(
-                self.code)
-        )
+    def getCode(self):
+        return self.__code
 
-        if response.status_code != 200:
-            return
+    def getName(self):
+        return self.__name
 
-        raw_html = BeautifulSoup(response.content, 'html.parser')
+    def getShift(self):
+        return self.__shift
 
-        # lists to take each habilitation data
-        codes = []
-        names = []
-        degrees = []
+    def getModality(self):
+        return self.__modality
 
-        # take codes and names from page
-        for h4 in raw_html.select('h4'):
-            # Separate the h4 in two parts
-            # code and name using regex
-            habilitation_code = (int(
-                (re.search(r"\d+", h4.text)).group()))
+    def getHabilitations(self):
+        return self.__habilitations
 
-            habilitation_name = (
-                re.search(r"\D+", h4.text)
-            ).group().rstrip()
+    def setCampus(self, campus):
+        if isinstance(campus, type(self.__campus)):
+            self.__campus = campus
 
-            codes.append(habilitation_code)
-            names.append(habilitation_name)
+    def setCode(self, code):
+        if isinstance(code, type(self.__code)):
+            self.__code = code
 
-        # take degrees from page
-        for tr in raw_html.select('tr'):
-            if tr.th.text == 'Grau':
-                habilitation_degree = tr.td.text
-                degrees.append(habilitation_degree)
+    def setName(self, name):
+        if isinstance(name, type(self.__name)):
+            self.__name = name
 
-        # append habilitations data in list
-        for i in range(len(codes)):
-            self.habilitations.append(
-                Habilitation(
-                    codes[i], names[i], degrees[i]
-                )
-            )
-            print("[COURSE {}] Got Habilitation {}".format(
-                self.name, names[i]))
+    def setShift(self, shift):
+        if isinstance(shift, type(self.__shift)):
+            self.__shift = shift
+
+    def setModality(self, modality):
+        if isinstance(modality, type(self.__modality)):
+            self.__modality = modality
+
+    def setHabilitations(self, Habilitation):
+        self.__habilitations = Habilitation

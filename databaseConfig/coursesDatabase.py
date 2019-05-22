@@ -35,12 +35,12 @@ class CourseDb(Database):
             for course in courses_set:
 
                 current_course = {
-                    'code': course.code,
-                    'campus': course.campus,
-                    'name': course.name,
-                    'shift': course.shift,
-                    'modality': course.modality,
-                    'habilitations': [str(x.code) for x in course.habilitations]
+                    'code': course.getCode(),
+                    'campus': course.getCampus(),
+                    'name': course.getName(),
+                    'shift': course.getShift(),
+                    'modality': course.getModality(),
+                    'habilitations': [str(x.getCode()) for x in course.getHabilitations()]
                 }
 
                 collection_course.insert_one(current_course)

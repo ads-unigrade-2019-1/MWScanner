@@ -1,16 +1,9 @@
-import requests
-from bs4 import BeautifulSoup
-from requests import get
 
-from mwscanner import BASE_URL
-from mwscanner.Mixins import UrlLoaderMixin
-
-
-class Habilitation(UrlLoaderMixin):
-    def __init__(self, code, name, degree):
-        self.code = code
-        self.name = name
-        self.degree = degree
+class Habilitation():
+    def __init__(self):
+        self.__code = ""
+        self.__name = ""
+        self.__degree = ""
 
         # This represents the disciplines associated with this
         # course. The data here wiil be on the following format:
@@ -19,50 +12,32 @@ class Habilitation(UrlLoaderMixin):
         #                     discipline of this period]
         #   ...
         # }
-        self.disciplines = {}
+        self.__disciplines = {}
 
-    def getDisciplineListURL(self):
-        # This method take the url of the
-        # disciplines from habilitation flow
-        return BASE_URL + 'graduacao/fluxo.aspx?cod={}'.format(self.code)
+    def getCode(self):
+        return self.__code
 
-    def buildFromHtml(self):
-        # This method builds the list of disciplines that belongs
-        # to this department. This list will be later used to
-        # process the creation of the Discipline object.
+    def getName(self):
+        return self.__name
 
-        response = self.getFromUrl(self.getDisciplineListURL())
+    def getDegree(self):
+        return self.__degree
 
-        if response.status_code != 200:
-            return
+    def getDisciplines(self):
+        return self.__disciplines
 
-        raw_html = BeautifulSoup(response.content, 'html.parser')
-        # scrolls through tables with datatable id
-        periods_tables = raw_html.find_all(id="datatable")
+    def setCode(self, code):
+        if isinstance(code, type(self.__code)):
+            self.__code = code
 
-        for period_table in periods_tables:
-            # picks up the period information that is in the tablehead
-            period_infos = period_table.find_all('th')
-            period = period_infos[1].text
+    def setName(self, name):
+        if isinstance(name, type(self.__name)):
+            self.__name = name
 
-            # take the information of the disciplines
-            # of the period that are in the td
-            disciplines_infos = period_table.find_all('td')
+    def setDegree(self, degree):
+        if isinstance(degree, type(degree)):
+            self.__degree = degree
 
-            period_disciplines = []
-            for i in range(0, len(disciplines_infos), 6):
-
-                discipline_code = int(disciplines_infos[3 + i].text)
-                discipline_name = disciplines_infos[4 + i].text.rstrip()
-
-                period_disciplines.append(
-                    {'Código': discipline_code,
-                        'Nome': discipline_name}
-                )
-
-            self.disciplines.update(
-                {period: period_disciplines}
-            )
-
-        print("[Habilitation {}] Finished".format(self.name))
-        return self
+    def setDisciplines(self, disciplines):
+        if isinstance(disciplines, type(self.__disciplines)):
+            self.__disciplines = disciplines

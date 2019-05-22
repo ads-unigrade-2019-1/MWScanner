@@ -20,22 +20,22 @@ class DisciplineDb(Database):
             classes = []
 
             # Get all the classes from the current discipline
-            if len(discipline.classes) >= 1:
-                classes = [x.name for x in discipline.classes]
+            if len(discipline.getClasses()) >= 1:
+                classes = [x.getName() for x in discipline.getClasses()]
 
             # send the attributes with a dict to MongoDb
             collection_discipline.insert_one({
-                'name': discipline.name,
-                'code': discipline.code,
-                'department': discipline.department,
+                'name': discipline.getName(),
+                'code': discipline.getCode(),
+                'department': discipline.getDepartment(),
                 'classes': classes,
-                'requirements': discipline.requirements,
-                'credits': discipline.credits
+                'requirements': discipline.getRequirements(),
+                'credits': discipline.getCredits()
             })
 
             # After save the disciplines call the method to
             # save the class
-            for c in discipline.classes:
+            for c in discipline.getClasses():
                 ClassDb.saveClass(c)
 
             progress += 1
