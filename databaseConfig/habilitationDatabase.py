@@ -21,7 +21,7 @@ class HabilitationDb(Database):
             # list from all disciplines related to habilitation
             for period, disciplines in habilitation.getDisciplines().items():
                 disciplines_list.append(
-                    [d['Código'] for d in disciplines]
+                    [[d['Código'], d['Nome']] for d in disciplines]
                 )
 
             # Add the main attributes in dict create a consistent data

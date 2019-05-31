@@ -8,8 +8,8 @@ class Habilitation():
         # This represents the disciplines associated with this
         # course. The data here wiil be on the following format:
         # disciplines = {
-        #   'PERIOD_NUMBER': [list with the code for the
-        #                     discipline of this period]
+        #   'PERIOD_NUMBER': [tuple with the code for the
+        #                     discipline of this period and names]
         #   ...
         # }
         self.__disciplines = {}
