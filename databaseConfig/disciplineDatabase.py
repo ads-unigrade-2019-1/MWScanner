@@ -13,29 +13,38 @@ class DisciplineDb(Database):
         db = Database.defineConnections()
         collection_discipline = db['disciplines']
 
-        # Run all the disciplines list
-        progress, total = 0, len(disciplines) - 1
+        dict_disciplines = {}
+        
         for discipline in disciplines:
+            if discipline.getCode() in dict_disciplines:
+                old_classes = dict_disciplines[discipline.getCode()].getClasses()
+                dict_disciplines[discipline.getCode()].setClasses(old_classes + discipline.getClasses())              
+            else:
+                dict_disciplines[discipline.getCode()] = discipline
+           
+
+        progress, total = 0, len(dict_disciplines) - 1
+        for discipline in dict_disciplines:
 
             classes = []
 
             # Get all the classes from the current discipline
-            if len(discipline.getClasses()) >= 1:
-                classes = [x.getName() for x in discipline.getClasses()]
+            if len(dict_disciplines[discipline].getClasses()) >= 1:
+                classes = [x.getName() for x in dict_disciplines[discipline].getClasses()]
 
             # send the attributes with a dict to MongoDb
             collection_discipline.insert_one({
-                'name': discipline.getName(),
-                'code': discipline.getCode(),
-                'department': discipline.getDepartment(),
+                'name': dict_disciplines[discipline].getName(),
+                'code': dict_disciplines[discipline].getCode(),
+                'department': dict_disciplines[discipline].getDepartment(),
                 'classes': classes,
-                'requirements': discipline.getRequirements(),
-                'credits': discipline.getCredits()
+                'requirements': dict_disciplines[discipline].getRequirements(),
+                'credits': dict_disciplines[discipline].getCredits()
             })
 
             # After save the disciplines call the method to
             # save the class
-            for c in discipline.getClasses():
+            for c in dict_disciplines[discipline].getClasses():
                 ClassDb.saveClass(c)
 
             progress += 1
