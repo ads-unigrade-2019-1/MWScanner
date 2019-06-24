@@ -2,6 +2,7 @@ from databaseConfig.dbConnection import Database
 
 
 class HabilitationDb(Database):
+
     # Class static to save all data related to
     # Habilitation in Courses
     @staticmethod

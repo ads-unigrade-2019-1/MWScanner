@@ -1,10 +1,7 @@
-import sys
-
 from multiprocessing.pool import ThreadPool
 
 from mwscanner.builders.CampusBuilder import CampusBuilder
 from mwscanner.Campus import Campus
-from mwscanner.Discipline import Discipline
 from databaseConfig.SaveData import SaveData
 
 
@@ -14,11 +11,6 @@ BASE_URL = 'https://matriculaweb.unb.br/'
 def proccessHabilitations(campus: Campus):
 
     all_habilitations = []
-
-    t_pool = ThreadPool(processes=8)
-    async_tasks = []
-
-    courses_len = len(campus.getCourses())
 
     for index, course in enumerate(campus.getCourses()):
 
@@ -30,9 +22,8 @@ def proccessHabilitations(campus: Campus):
 
 
 def proccessDisciplines(campus: Campus):
-    all_disciplines = []
 
-    departments_len = len(campus.getDepartments())
+    all_disciplines = []
 
     # prints department information
     # and then build the list of disciplines that each department have
@@ -75,7 +66,6 @@ if __name__ == '__main__':
         list_all_disciplines = list_all_disciplines.get()
 
         t_pool.terminate()
-
 
         print("Calling db save function...")
 

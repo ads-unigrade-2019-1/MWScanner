@@ -1,9 +1,6 @@
-import requests
 from bs4 import BeautifulSoup
-from requests import get
 
 from mwscanner import BASE_URL
-from mwscanner.Discipline import Discipline
 from mwscanner.Mixins import TableReaderMixin, UrlLoaderMixin
 from mwscanner.Department import Department
 from mwscanner.builders.DisciplinesBuilder import DisciplinesBuilder

@@ -1,12 +1,7 @@
-import sys
-
-import requests
 from bs4 import BeautifulSoup
-from requests import get
 
 from mwscanner.builders.CoursesBuilder import CourseBuilder
 from mwscanner.builders.DepartmentBuilder import DepartmentBuilder
-from mwscanner.Department import Department
 from mwscanner.Mixins import TableReaderMixin, UrlLoaderMixin
 from mwscanner.Campus import Campus
 from mwscanner import BASE_URL
@@ -132,7 +127,9 @@ class CampusBuilder(TableReaderMixin, UrlLoaderMixin):
             return depart
 
         pool = ThreadPool(16)
-        c = pool.map(createDepartments, table_data)
+
+        pool.map(createDepartments, table_data)
+
         pool.close()
         pool.join()
 

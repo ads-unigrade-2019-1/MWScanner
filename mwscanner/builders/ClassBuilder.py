@@ -1,12 +1,10 @@
 from mwscanner.Class import Class
-from bs4 import BeautifulSoup
-import re
 
 
 class ClassBuilder:
 
     def __init__(self):
-        self
+        pass
 
     def extractClassName(self, raw_html):
         # returns the text present on the table

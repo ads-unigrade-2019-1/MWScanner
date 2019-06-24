@@ -1,16 +1,4 @@
-import sys
-
-import requests
-from bs4 import BeautifulSoup
-from requests import get
-
-from mwscanner import BASE_URL
-from mwscanner.Discipline import Discipline
-from mwscanner.builders.DisciplinesBuilder import DisciplinesBuilder
-from mwscanner.Mixins import TableReaderMixin, UrlLoaderMixin
-
-
-class Department(TableReaderMixin, UrlLoaderMixin):
+class Department:
 
     def __init__(self):
         # department attributes

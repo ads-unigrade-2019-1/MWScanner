@@ -21,7 +21,6 @@ class DisciplineDb(Database):
                 dict_disciplines[discipline.getCode()].setClasses(old_classes + discipline.getClasses())              
             else:
                 dict_disciplines[discipline.getCode()] = discipline
-           
 
         progress, total = 0, len(dict_disciplines) - 1
         for discipline in dict_disciplines:

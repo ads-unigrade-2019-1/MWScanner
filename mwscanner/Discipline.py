@@ -1,15 +1,4 @@
-import sys
-
-import requests
-from bs4 import BeautifulSoup
-from requests import get
-
-from mwscanner import BASE_URL
-from mwscanner.Mixins import TableReaderMixin, UrlLoaderMixin
-from mwscanner.builders.ClassBuilder import ClassBuilder
-
-
-class Discipline(TableReaderMixin, UrlLoaderMixin):
+class Discipline:
     # This class represents a Discipline present on
     # matriculaweb. it contains data about the discipline
     # and holds its classes and requirements

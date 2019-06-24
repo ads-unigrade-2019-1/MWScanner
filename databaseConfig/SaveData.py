@@ -4,8 +4,6 @@ from databaseConfig.disciplineDatabase import DisciplineDb
 from databaseConfig.habilitationDatabase import HabilitationDb
 from databaseConfig.dbConnection import Database
 
-from multiprocessing.pool import ThreadPool
-
 
 class SaveData:
     # This is only a class intermediate between extraction part

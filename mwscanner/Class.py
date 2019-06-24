@@ -1,4 +1,4 @@
-class Class():
+class Class:
     # This class represents a discipline class on Matricula
     # Web. It contains data about the meetings and a
     # connection to the discipline.

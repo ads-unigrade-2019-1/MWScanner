@@ -1,4 +1,4 @@
-class Campus():
+class Campus:
     # This class represent all the 4 campus prensent in UnB
 
     # Define the attributes basics from all campus

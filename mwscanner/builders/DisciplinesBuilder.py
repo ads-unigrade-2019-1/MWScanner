@@ -1,8 +1,4 @@
-import sys
-
-import requests
 from bs4 import BeautifulSoup
-from requests import get
 
 from mwscanner import BASE_URL
 from mwscanner.Mixins import TableReaderMixin, UrlLoaderMixin

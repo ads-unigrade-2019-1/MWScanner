@@ -1,13 +1,9 @@
 import re
-import sys
 
-import requests
 from bs4 import BeautifulSoup
-from requests import get
 
 from mwscanner.Course import Course
 from mwscanner.Mixins import UrlLoaderMixin
-from mwscanner.Habilitation import Habilitation
 from mwscanner.builders.HabilitationBuilder import HabilitationBuilder
 from mwscanner import BASE_URL
 

@@ -1,19 +1,4 @@
-import re
-import sys
-
-import requests
-from bs4 import BeautifulSoup
-from requests import get
-
-from mwscanner.Habilitation import Habilitation
-from mwscanner.builders.HabilitationBuilder import HabilitationBuilder
-from mwscanner.Mixins import UrlLoaderMixin
-
-
-from mwscanner import BASE_URL
-
-
-class Course(UrlLoaderMixin):
+class Course:
     # This class represents a course registered on the Matricula
     # Web. It has the information about this course.
 
