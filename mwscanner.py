@@ -2,7 +2,7 @@ from multiprocessing.pool import ThreadPool
 
 from mwscanner.builders.CampusBuilder import CampusBuilder
 from mwscanner.Campus import Campus
-from databaseConfig.SaveData import SaveData
+from databaseConfig.SaveDataFacade import SaveDataFacade
 
 
 BASE_URL = 'https://matriculaweb.unb.br/'
@@ -69,7 +69,7 @@ if __name__ == '__main__':
 
         print("Calling db save function...")
 
-        SaveData.saveData(
+        SaveDataFacade.saveData(
             list_all_campus_courses,
             list_all_campus_departments,
             list_all_habilitations,

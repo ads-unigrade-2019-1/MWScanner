@@ -5,7 +5,7 @@ from databaseConfig.habilitationDatabase import HabilitationDb
 from databaseConfig.dbConnection import Database
 
 
-class SaveData:
+class SaveDataFacade:
     # This is only a class intermediate between extraction part
     # and mongoDb
 
